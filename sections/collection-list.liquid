@@ -1,0 +1,1117 @@
+{{ 'component-collection-card.css' | asset_url | stylesheet_tag }}
+{{ 'collection-list.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'collection-list.js' | asset_url }}" defer="defer"></script>
+
+{% liquid
+  assign items_per_row = section.settings.items_per_row
+  assign items_per_row_tablet = items_per_row | divided_by: 2.0 | ceil
+  if items_per_row == 3
+    assign items_per_row_tablet = 3
+  endif
+  assign first_ratio = '3/4'
+
+  assign layout = section.settings.layout
+  assign mobile_disable_slider = section.settings.mobile_disable_slider
+  assign card_style = section.settings.card_style
+  assign show_pagination = section.settings.show_pagination
+  assign show_navigation = section.settings.show_navigation
+  assign autorotate = section.settings.autorotate
+  assign autorotate_speed = section.settings.autorotate_speed
+  assign use_scroll_mobile = section.settings.use_scroll_mobile
+  assign mobile_items_per_row = section.settings.mobile_items_per_row | default: 2
+
+  assign enable_gradient = section.settings.enable_gradient
+  assign gradient_width_desktop = section.settings.gradient_width_desktop | default: 200
+  assign gradient_width_mobile = section.settings.gradient_width_mobile | default: 220
+  assign mobile_content_width = section.settings.mobile_content_width | default: 104
+  assign controls_position = section.settings.controls_position | default: 'inline'
+
+  assign row_gap = section.settings.item_gap
+  assign row_gap_mobile = section.settings.mobile_gap
+  assign expanded = section.settings.expanded
+
+  assign container = section.settings.container
+  if container == 'w-full'
+    assign container = 'container-full'
+  endif
+
+  assign container_offset = 0
+  assign container_width = settings.container_width
+
+  if section.settings.container == 'container-fluid'
+    assign container_offset = settings.container_fluid_offset
+    assign container_width = settings.container_fluid_width
+  endif
+
+  assign animation_effect = settings.animations
+  assign animated = false
+  if animation_effect != 'none'
+    assign animated = true
+    if section.settings.animations != 'inherit'
+      assign animation_effect = section.settings.animations
+    endif
+  endif
+
+  assign slider_control_classes = ''
+  if section.settings.hidden_slide_control_mobile
+    assign slider_control_classes = 'm-slider-controls--md-hidden'
+  endif
+
+  assign slider_controls_position = 'bottom-' | append: section.settings.header_alignment
+
+  assign dynamic_links = nil
+  assign dynamic_mode = false
+  assign dynamic_count = 0
+  assign selected_menu = section.settings.menu
+  if selected_menu == blank
+    assign selected_menu = 'main-menu-new'
+  endif
+  assign menu_handles_str = selected_menu
+  if selected_menu != 'main-menu-new'
+    assign menu_handles_str = selected_menu | append: '|main-menu-new'
+  endif
+  assign menu_handles = menu_handles_str | split: '|'
+  if collection != blank
+    for menu_handle in menu_handles
+      if dynamic_mode
+        break
+      endif
+      for link in linklists[menu_handle].links
+        assign link_url_handle = link.url | split: '/collections/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+        assign link_matches = false
+        if link.type == 'collection_link' and link.object.handle == collection.handle
+          assign link_matches = true
+        elsif link_url_handle == collection.handle
+          assign link_matches = true
+        endif
+        if link_matches
+          if link.links.size > 0
+            assign dynamic_links = link.links
+            assign dynamic_mode = true
+            assign dynamic_count = link.links.size
+          endif
+          break
+        endif
+        unless dynamic_mode
+          for child_link in link.links
+            assign child_url_handle = child_link.url | split: '/collections/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+            assign child_matches = false
+            if child_link.type == 'collection_link' and child_link.object.handle == collection.handle
+              assign child_matches = true
+            elsif child_url_handle == collection.handle
+              assign child_matches = true
+            endif
+            if child_matches
+              if child_link.links.size > 0
+                assign dynamic_links = child_link.links
+                assign dynamic_mode = true
+                assign dynamic_count = child_link.links.size
+              endif
+              break
+            endif
+          endfor
+        endunless
+        if dynamic_mode
+          break
+        endif
+      endfor
+    endfor
+  endif
+
+  assign total_items = section.blocks.size
+  if dynamic_mode
+    assign total_items = dynamic_count
+  endif
+
+  assign enable_slider = false
+  if dynamic_mode
+    assign enable_slider = true
+  elsif section.settings.enable_slider == true and total_items > 3
+    assign enable_slider = true
+  endif
+
+  if enable_slider and expanded
+    assign container = 'container-full'
+  endif
+
+  assign show_controls = false
+  if show_pagination or show_navigation
+    assign show_controls = true
+  endif
+
+  unless dynamic_mode
+    for block in section.blocks
+      if forloop.first and block.type == 'collection_block'
+        assign first_ratio = block.settings.item_image.aspect_ratio
+      endif
+    endfor
+  endunless
+
+  if dynamic_mode
+    for dyn_link in dynamic_links
+      if forloop.first
+        if dyn_link.type == 'collection_link' and dyn_link.object.image != blank
+          assign first_ratio = dyn_link.object.image.aspect_ratio
+        endif
+      endif
+    endfor
+  endif
+
+  if section.settings.image_rounded
+    assign first_ratio = '1'
+  endif
+
+  assign show_section_content = false
+  if dynamic_mode or collection == blank
+    assign show_section_content = true
+  endif
+%}
+
+{% style %}
+  #m-collection-list-{{ section.id }} {
+    --offset-margin: calc((100vw - {{ container_width }}px) / 2);
+  }
+  {% if enable_slider and section.settings.container != 'w-full' and expanded %}
+    {% if layout != 'left-side' %}
+      @media (min-width: 1280px) {
+        .m-collection-list--{{ section.id }} [data-enable-slider="true"] .m-collection-list__content {
+          padding-left: calc(max({{ container_offset }}px, var(--offset-margin)) - 15px);
+        }
+        [dir="rtl"] .m-collection-list--{{ section.id }} [data-enable-slider="true"] .m-collection-list__content {
+          padding-left: 0;
+          padding-right: calc(max({{ container_offset }}px, var(--offset-margin)) - 15px);
+        }
+      }
+    {% else %}
+      @media (min-width: 1280px) {
+        .m-collection-list--left-side.m-collection-list--{{ section.id }} .m-collection-list__wrapper {
+          padding-left: calc(max({{ container_offset }}px, var(--offset-margin)) - 15px);
+        }
+        [dir="rtl"] .m-collection-list--left-side.m-collection-list--{{ section.id }} .m-collection-list__wrapper {
+          padding-left: 0;
+          padding-right: calc(max({{ container_offset }}px, var(--offset-margin)) - 15px);
+        }
+      }
+    {% endif %}
+  {% endif %}
+  {% if enable_slider and expanded %}
+    @media (min-width: 1280px) {
+      .m-collection-list--{{ section.id }} .m-collection-list__content {
+        margin-right: calc( 1 / {{ section.settings.items_per_row | plus: 1 }} * -20%);
+      }
+      [dir="rtl"] .m-collection-list--{{ section.id }} .m-collection-list__content {
+        margin-right: 0;
+        margin-left: calc( 1 / {{ section.settings.items_per_row | plus: 1 }} * -20%);
+      }
+    }
+  {% endif %}
+  {% if controls_position == 'inline' %}
+    .m-collection-list__heading-row--{{ section.id }} {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+    .m-slider-controls{
+      display: block !important;
+    }
+    .m-collection-list__heading-row--{{ section.id }} .m-section__heading {
+      margin-bottom: 0;
+    }
+    .m-collection-list__heading-row--{{ section.id }} .m-slider-controls {
+      position: static !important;
+      flex-shrink: 0;
+      margin-top: 0 !important;
+      display: flex !important;
+    }
+    .m-collection-list__heading-row--{{ section.id }} .m-slider-controls__wrapper {
+      display: flex !important;
+      align-items: center;
+      gap: 12px;
+    }
+    .m-collection-list__heading-row--{{ section.id }} .swiper-pagination {
+      position: static !important;
+      width: auto !important;
+      min-width: 40px;
+      text-align: center;
+    }
+  {% endif %}
+  {% if enable_gradient %}
+    #m-collection-list-{{ section.id }} .m-collection-list__content {
+      position: relative;
+    }
+    #m-collection-list-{{ section.id }} .m-collection-list__content::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -15px;
+      width: {{ gradient_width_desktop }}px;
+      height: 100%;
+      background: linear-gradient(to right, transparent, var(--color-bg, #fff));
+      pointer-events: none;
+      z-index: 2;
+    }
+    @media (max-width: 767px) {
+      .m-collection-list--{{ section.id }} .m-collection-list__content{
+        width: {{ mobile_content_width }}vw !important;
+      }
+      #m-collection-list-{{ section.id }} .m-collection-list__content::after {
+        width: {{ gradient_width_mobile }}px;
+      }
+    }
+  {% endif %}
+{% endstyle %}
+
+{% capture section_content %}
+  {% if show_section_content and section.settings.heading != blank or show_section_content and section.settings.subheading != blank or show_section_content and section.settings.description != blank %}
+    {% if section.settings.layout != 'left-side' %}<div class="m-collection-list__header-container {{ section.settings.container | replace: 'w-full', 'container-full' }}">{% endif %}
+    <div class="m-section__header m:text-{{ section.settings.header_alignment }}">
+      {% if section.settings.subheading != blank %}
+        <p class="m-section__subheading{% if animated %} m-scroll-trigger animate--{{ animation_effect }}{% endif %}">{{ section.settings.subheading }}</p>
+      {% endif %}
+      {% if controls_position == 'inline' %}
+        <div class="m-collection-list__heading-row--{{ section.id }}">
+          {% if section.settings.heading != blank %}
+            <h2 class="m-section__heading {{ section.settings.heading_size | default: 'h3' }}{% if animated %} m-scroll-trigger animate--{{ animation_effect }}{% endif %}">{{ section.settings.heading }}</h2>
+          {% endif %}
+          {% if enable_slider %}
+            <div class="m-slider-controls m-slider-controls--show-nav m-slider-controls--show-pagination m-slider-controls--pagination-fraction m-slider-controls--group">
+              <div class="m-slider-controls__wrapper">
+                <button class="m-slider-controls__button m-slider-controls__button-prev swiper-button-prev" aria-label="Previous">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <div class="swiper-pagination m:w-full"></div>
+                <button class="m-slider-controls__button m-slider-controls__button-next swiper-button-next" aria-label="Next">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        {% if section.settings.heading != blank %}
+          <h2 class="m-section__heading {{ section.settings.heading_size | default: 'h3' }}{% if animated %} m-scroll-trigger animate--{{ animation_effect }}{% endif %}">{{ section.settings.heading }}</h2>
+        {% endif %}
+      {% endif %}
+      {% if section.settings.description != blank %}
+        <div class="m-section__description{% if animated %} m-scroll-trigger animate--{{ animation_effect }}{% endif %}">{{ section.settings.description }}</div>
+      {% endif %}
+      {% if section.settings.button_label != blank %}
+
+        {% capture arrow %}<svg class="m-rlt-reverse-x" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.03062 2.4694L12.0306 7.4694C12.1005 7.53908 12.156 7.62187 12.1939 7.71304C12.2317 7.8042 12.2512 7.90194 12.2512 8.00065C12.2512 8.09936 12.2317 8.1971 12.1939 8.28827C12.156 8.37943 12.1005 8.46222 12.0306 8.5319L7.03062 13.5319C6.88973 13.6728 6.69863 13.752 6.49937 13.752C6.30012 13.752 6.10902 13.6728 5.96812 13.5319C5.82723 13.391 5.74807 13.1999 5.74807 13.0007C5.74807 12.8014 5.82723 12.6103 5.96812 12.4694L10.4375 8.00003L5.9675 3.53065C5.8266 3.38976 5.74745 3.19866 5.74745 2.9994C5.74745 2.80015 5.8266 2.60905 5.9675 2.46815C6.10839 2.32726 6.29949 2.2481 6.49875 2.2481C6.69801 2.2481 6.8891 2.32726 7.03 2.46815L7.03062 2.4694Z" fill="currentColor"/>
+          </svg>
+        {% endcapture %}
+        {% liquid
+          assign button_label = section.settings.button_label
+          assign is_button_icon = false
+          if button_label contains '[arrow]'
+            assign is_button_icon = true
+          endif
+        %}
+        <div class="m-section__button{% if animated %} m-scroll-trigger animate--{{ animation_effect }}{% endif %}">
+          <a
+            class="m-button{% if is_button_icon %} m-button--text-with-icon{% endif %} {{ section.settings.button_style }}"
+            {% if section.settings.button_link != blank %}
+              href="{{ section.settings.button_link }}"
+            {% else %}
+              aria-disabled="true"
+            {% endif %}
+          >
+            {{- button_label | replace: '[arrow]', arrow -}}
+          </a>
+        </div>
+      {% endif %}
+
+      {% if controls_position == 'bottom' and enable_slider and expanded %}
+        {% if section.settings.show_pagination or section.settings.show_navigation %}
+          <div class="m-collection-list__controls m-collection-list__controls--top">
+            {% render 'slider-controls',
+              extra_classes: slider_control_classes,
+              position: slider_controls_position,
+              show_nav: show_navigation,
+              show_pagination: show_pagination,
+              pagination_class: 'm-dot-circle m-dot-circle--dark',
+              pagination_type: 'fraction'
+            %}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div><!-- .m-section__header -->
+    {% if section.settings.layout != 'left-side' %}</div>{% endif %}
+  {% endif %}
+
+  {% if section.settings.layout != 'left-side' %}<div class="m-collection-list__content-container {{ container }}">{% endif %}
+  <div class="m-collection-list__content">
+    <div class="m-mixed-layout{% if mobile_disable_slider or enable_slider != true %} m-mixed-layout--mobile-grid{% if use_scroll_mobile %} m-mixed-layout--mobile-scroll{% endif %}{% endif %}">
+      <div class="m-mixed-layout__wrapper{% if enable_slider %} swiper-container swiper--equal-height{% endif %}">
+        <div class="m-mixed-layout__inner m:grid m:grid-{{ mobile_items_per_row }}-cols md:m:grid-{{ items_per_row_tablet }}-cols xl:m:grid-{{ items_per_row }}-cols{% if enable_slider %} swiper-wrapper{% endif %}">
+          {% if dynamic_mode %}
+            {% for dyn_link in dynamic_links %}
+              {% liquid
+                assign dyn_collection = nil
+                if dyn_link.type == 'collection_link'
+                  assign dyn_collection = dyn_link.object
+                elsif dyn_link.url contains '/collections/'
+                  assign dyn_handle = dyn_link.url | split: '/collections/' | last | split: '?' | first | split: '#' | first
+                  assign dyn_collection = collections[dyn_handle]
+                endif
+              %}
+              {% if dyn_collection != blank %}
+                {% render 'collection-card',
+                  section: section,
+                  collection: dyn_collection,
+                  card_style: card_style,
+                  text_alignment: section.settings.text_alignment,
+                  image: dyn_collection.image,
+                  show_product_count: section.settings.show_product_count,
+                  enable_slider: enable_slider,
+                  image_rounded: section.settings.image_rounded,
+                  hover_effect: section.settings.hover_effect,
+                  title: dyn_link.title,
+                  index: forloop.index,
+                  animated: animated,
+                  animation_effect: animation_effect
+                %}
+              {% endif %}
+            {% endfor %}
+          {% elsif collection == blank %}
+            {% for block in section.blocks %}
+              {% case block.type %}
+                {% when 'collection_block' %}
+                  {% liquid
+                    assign block_collection = collections[block.settings.collection]
+                    assign default_label = 'homepage.onboarding.collection_title' | t
+                  %}
+                  {% render 'collection-card',
+                    section: section,
+                    collection: block_collection,
+                    card_style: card_style,
+                    text_alignment: section.settings.text_alignment,
+                    image: block.settings.item_image,
+                    show_product_count: section.settings.show_product_count,
+                    enable_slider: enable_slider,
+                    image_rounded: section.settings.image_rounded,
+                    hover_effect: section.settings.hover_effect,
+                    title: block.settings.title,
+                    index: forloop.index,
+                    animated: animated,
+                    animation_effect: animation_effect
+                  %}
+                {% when 'banner' %}
+                  {%- assign banner_collection = collections[block.settings.collection] -%}
+                  <div class="m:column{% if enable_slider %} swiper-slide{% endif %}">
+                    <div
+                      class="m-collection-banner collection-card{% if animated %} m-scroll-trigger animate--{{ animation_effect }}{% endif %}"
+                      {% if animated %}
+                        data-cascade
+                        style="--animation-order: {{ forloop.index }};"
+                      {% endif %}
+                    >
+                      <div class="m-collection-banner__inner m:text-center" style="--aspect-ratio: {{ first_ratio | default: '1' }}; background: {{ block.settings.item_bg }}">
+                        <div class="m-collection-banner__content">
+                          <a href="{{ banner_collection.url | default: "#" }}" class="m-hidden-link"></a>
+                          <h3 class="m-collection-banner__title" style="color: {{ block.settings.item_text_color }}">{{ block.settings.title }}</h3>
+                          <p class="m-collection-banner__description" style="color: {{ block.settings.item_text_color }}">{{ block.settings.description }}</p>
+                        </div>
+                      </div>
+
+                      {%- assign default_label = 'homepage.onboarding.collection_title' | t -%}
+                      <a class="m-collection-banner__collection-name m:text-{{ section.settings.text_alignment }}" href="{{ banner_collection.url | default: "#" }}">
+                        {{ banner_collection.title | default: default_label }}
+                        {% if section.settings.show_product_count == true %}
+                          <sup>{{ banner_collection.all_products_count }}</sup>
+                        {% endif %}
+                      </a>
+                    </div>
+                  </div>
+              {% endcase %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% if show_section_content and controls_position == 'bottom' and enable_slider and expanded == false %}
+        {% if section.settings.show_pagination or section.settings.show_navigation %}
+          <div class="m-collection-list__controls m-collection-list__controls--bottom m:text-center">
+            {% render 'slider-controls',
+              extra_classes: slider_control_classes,
+              show_nav: show_navigation,
+              show_pagination: show_pagination,
+              pagination_class: 'm-dot-circle m-dot-circle--dark',
+              pagination_type: 'fraction'
+            %}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div> <!-- .m-collection-list__content -->
+  {% if section.settings.layout != 'left-side' %}</div>{% endif %}
+{% endcapture %}
+
+<section
+  id="m-collection-list-{{ section.id }}"
+  data-section-type="collection-list"
+  data-section-id="{{ section.id }}"
+  class="m-section m-collection-list m-collection-list--{{ layout }} {{ section.settings.custom_class }} m-collection-list--{{ section.id }} m-gradient m-color-{{ section.settings.color_scheme }}"
+  data-hover-effect="{{ section.settings.hover_effect }}"
+  data-container="{{ section.settings.container }}"
+  style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div
+    class="m-collection-list__container{% if section.settings.layout == 'left-side' %} {{ container }}{% endif %} m-section-my m-section-py"
+    style="--column-gap: {{ section.settings.item_gap }}px; --column-gap-mobile: {{ section.settings.mobile_gap }}px; --row-gap-mobile: {{ row_gap_mobile }}px; --row-gap: {{ row_gap }}px; --items: {{ section.settings.items_per_row | plus: 1 }}"
+  >
+    <m-collection-list
+      data-enable-slider="{{ enable_slider }}"
+      data-mobile-disable-slider="{{ section.settings.mobile_disable_slider }}"
+      data-mobile-hide-controls="{{ section.settings.hidden_slide_control_mobile }}"
+      {% if enable_slider %}
+        data-gutter="{{ section.settings.item_gap }}"
+        data-items="{{ section.settings.items_per_row }}"
+        data-autoplay="{{ autorotate }}"
+        data-autoplay-speed="{{ autorotate_speed }}"
+        data-pagination-type="fraction"
+        data-show-controls="{{ show_controls }}"
+      {% endif %}
+      data-expanded="{{ expanded }}"
+      data-total="{{ total_items }}"
+      class="m-collection-list__wrapper m:block"
+    >
+      {{ section_content }}
+    </m-collection-list>
+  </div>
+</section>
+
+<script>
+  (function() {
+    function patchSlider() {
+      var sectionEl = document.getElementById('m-collection-list-{{ section.id }}');
+      if (!sectionEl) return;
+      var comp = sectionEl.querySelector('m-collection-list');
+      if (!comp) return;
+
+      var mobileItems = {{ mobile_items_per_row }};
+
+      function patchBreakpoints(swiperInstance) {
+        if (!swiperInstance || !swiperInstance.params) return;
+        swiperInstance.params.breakpoints[0] = { slidesPerView: mobileItems };
+        swiperInstance.params.breakpoints[480] = { slidesPerView: mobileItems };
+
+        // Disable Swiper's built-in loop when slide count <= slidesPerView — prevents cloned duplicate slides
+        var total = parseInt(comp.getAttribute('data-total') || '0');
+        var items = parseInt(comp.getAttribute('data-items') || '4');
+        if (total > 0 && total <= items) {
+          swiperInstance.params.loop = false;
+          if (typeof swiperInstance.loopDestroy === 'function') {
+            swiperInstance.loopDestroy();
+          }
+        }
+
+        swiperInstance.update();
+      }
+
+      // Patch initSlider so re-inits also get the fix
+      var origInit = comp.initSlider;
+      comp.initSlider = function() {
+        origInit.call(this);
+        patchBreakpoints(this.slider);
+      };
+
+      // If slider already exists, patch immediately
+      if (comp.slider && typeof comp.slider === 'object') {
+        patchBreakpoints(comp.slider);
+      } else {
+        // Slider not yet created — re-trigger init
+        comp.initSlider();
+      }
+    }
+
+    // Wait for the deferred script and custom element to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(patchSlider, 100);
+      });
+    } else {
+      setTimeout(patchSlider, 100);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Collection list",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "[Watch tutorial](https://foxecom.link/gFSv60)"
+    },
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by collections"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "default": "h3",
+      "options": [
+        {
+          "label": "Medium",
+          "value": "h3"
+        },
+        {
+          "label": "Large",
+          "value": "h2"
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "info": "Leave blank to hide the button"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "m-button--primary",
+          "label": "Primary button"
+        },
+        {
+          "value": "m-button--secondary",
+          "label": "Secondary button"
+        },
+        {
+          "value": "m-button--white",
+          "label": "White button"
+        },
+        {
+          "value": "m-button--link",
+          "label": "Underline button"
+        }
+      ],
+      "default": "m-button--primary"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Text alignment",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "info": "Used to auto-display child collections on collection pages. Defaults to 'main-menu-new' if not set."
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Container type",
+      "default": "container-fluid",
+      "options": [
+        {
+          "value": "container-fluid",
+          "label": "Default"
+        },
+        {
+          "value": "w-full",
+          "label": "Full width"
+        },
+        {
+          "value": "container",
+          "label": "Use container box"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "grid",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Standard"
+        },
+        {
+          "value": "left-side",
+          "label": "Heading left side"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "expanded",
+      "label": "Expanded",
+      "default": true,
+      "info": "Work if Enable slider is checked"
+    },
+    {
+      "type": "header",
+      "content": "Card settings"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "default": "standard",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "boxed",
+          "label": "Boxed"
+        },
+        {
+          "value": "inside",
+          "label": "Content inside"
+        },
+        {
+          "value": "inside-2",
+          "label": "Button only"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover effect",
+      "default": "scaling-down",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "scaling-down",
+          "label": "Scaling down"
+        },
+        {
+          "value": "scaling-up",
+          "label": "Scaling up"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "count_inline_title",
+      "label": "Product count inline",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "image_rounded",
+      "label": "Image rounded",
+      "default": false,
+      "info": "Don't work well with \"Content inside\" layout"
+    },
+    {
+      "type": "header",
+      "content": "Grid settings"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row",
+      "label": "Collections per row",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Column gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Overlay settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gradient",
+      "label": "Show fade overlay",
+      "default": true,
+      "info": "Adds a gradient fade effect on the right edge of the slider"
+    },
+    {
+      "type": "range",
+      "id": "gradient_width_desktop",
+      "label": "Overlay width (desktop)",
+      "min": 50,
+      "max": 400,
+      "step": 10,
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gradient_width_mobile",
+      "label": "Overlay width (mobile)",
+      "min": 50,
+      "max": 400,
+      "step": 10,
+      "default": 220,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_width",
+      "label": "Mobile content width",
+      "min": 100,
+      "max": 120,
+      "step": 1,
+      "default": 104,
+      "unit": "vw",
+      "info": "Content width on mobile when overlay is enabled"
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_slider",
+      "label": "Enable slider",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Show pagination",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "controls_position",
+      "label": "Controls position",
+      "default": "inline",
+      "options": [
+        {
+          "value": "inline",
+          "label": "Inline with heading"
+        },
+        {
+          "value": "bottom",
+          "label": "Below slider"
+        }
+      ],
+      "info": "Where to display slider navigation controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "autorotate",
+      "label": "Auto slide",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autorotate_speed",
+      "label": "Auto slide every",
+      "max": 10,
+      "min": 2,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Mobile settings"
+    },
+    {
+      "type": "checkbox",
+      "label": "Disable slider",
+      "id": "mobile_disable_slider",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "label": "Use horizontal scrollbar",
+      "id": "use_scroll_mobile",
+      "default": true,
+      "info": "Uncheck to display as grid"
+    },
+    {
+      "type": "range",
+      "id": "mobile_items_per_row",
+      "label": "Collections per row (mobile)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Column gap",
+      "min": 0,
+      "max": 30,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidden_slide_control_mobile",
+      "label": "Hide slider controls",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Custom Attributes"
+    },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom classes"
+    },
+    {
+      "type": "header",
+      "content": "Animations"
+    },
+    {
+      "type": "select",
+      "id": "animations",
+      "label": "Visible in the view animation",
+      "default": "inherit",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit global setting"
+        },
+        {
+          "value": "fade-in",
+          "label": "Fade in"
+        },
+        {
+          "value": "fade-in-up",
+          "label": "Fade in up"
+        },
+        {
+          "value": "fade-in-left",
+          "label": "Fade in left"
+        },
+        {
+          "value": "fade-in-right",
+          "label": "Fade in right"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_block",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Example collection title",
+          "info": "Leave blank to use collection's title"
+        },
+        {
+          "type": "image_picker",
+          "id": "item_image",
+          "label": "Featured image"
+        }
+      ]
+    },
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "header",
+          "content": "General"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "New season in town"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Claritas est etiam processus dynamicus qui sequitur."
+        },
+        {
+          "type": "header",
+          "content": "Colors"
+        },
+        {
+          "type": "color",
+          "id": "item_bg",
+          "label": "Background",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "item_text_color",
+          "label": "Text color",
+          "default": "#fff"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection list",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "collection_block",
+          "settings": {
+            "title": "Example collection title"
+          }
+        },
+        {
+          "type": "collection_block",
+          "settings": {
+            "title": "Example collection title"
+          }
+        },
+        {
+          "type": "collection_block",
+          "settings": {
+            "title": "Example collection title"
+          }
+        },
+        {
+          "type": "collection_block",
+          "settings": {
+            "title": "Example collection title"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

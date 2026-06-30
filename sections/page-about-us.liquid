@@ -1,0 +1,22 @@
+{%- assign bl = section.settings.breadcrumb_layout | default: 'outside' -%}
+{% render 'page-title', title: page.title, breadcrumb_layout: bl %}
+
+{% schema %}
+{
+  "name": "About Us",
+  "settings": [
+    {
+      "type": "select",
+      "id": "breadcrumb_layout",
+      "label": "Breadcrumb layout",
+      "options": [
+        { "value": "outside", "label": "Breadcrumb outside" },
+        { "value": "outside_no_border", "label": "Breadcrumb outside (no border)" },
+        { "value": "inside", "label": "Breadcrumb inside" },
+        { "value": "none", "label": "Without breadcrumb" }
+      ],
+      "default": "outside"
+    }
+  ]
+}
+{% endschema %}
