@@ -1,0 +1,2278 @@
+{% comment %}
+  Section: Visit Us Today
+  A horizontally-scrolling "Store Locations" showcase with heading block,
+  snap scrolling, custom progress indicator, keyboard nav, and drag-to-scroll.
+{% endcomment %}
+
+{%- liquid
+  assign section_id = section.id
+  assign inset_d = section.settings.left_inset_desktop
+  assign inset_m = section.settings.left_inset_mobile
+  assign card_w = section.settings.content_width
+  assign card_gap = section.settings.card_gap
+  assign pad_t = section.settings.section_padding_top
+  assign pad_b = section.settings.section_padding_bottom
+  assign mobile_card_vw = section.settings.mobile_card_width_vw
+  assign peek_d = section.settings.peek_width_desktop
+
+  assign show_info_icons = section.settings.show_info_icons
+  assign icon_addr_type = section.settings.icon_address_type
+  assign icon_hrs_type = section.settings.icon_hours_type
+  assign icon_phn_type = section.settings.icon_phone_type
+  assign icon_size = section.settings.icon_size
+  assign icon_color_v = section.settings.icon_color
+  assign icon_stroke = section.settings.icon_stroke_width
+  assign icon_gap = section.settings.icon_gap
+  assign icon_align_v = section.settings.icon_align
+  assign icon_bg_style = section.settings.icon_background_style
+  assign icon_bg_color = section.settings.icon_background_color
+  assign icon_bg_size = section.settings.icon_background_size
+  assign icon_bg_radius = section.settings.icon_background_radius
+  assign icon_bg_border_color = section.settings.icon_background_border_color
+  assign icon_bg_border_width = section.settings.icon_background_border_width
+
+  if icon_align_v == 'center'
+    assign icon_align_css = 'center'
+  else
+    assign icon_align_css = 'flex-start'
+  endif
+
+  if icon_bg_style == 'circle'
+    assign icon_bg_radius_css = '999px'
+  elsif icon_bg_style == 'square'
+    assign icon_bg_radius_css = icon_bg_radius | append: 'px'
+  else
+    assign icon_bg_radius_css = '0'
+  endif
+
+  assign eyebrow_color = section.settings.eyebrow_color
+  assign eyebrow_size = section.settings.eyebrow_size
+  assign eyebrow_ls = section.settings.eyebrow_letter_spacing
+  assign heading_color = section.settings.heading_color
+  assign heading_size_d = section.settings.heading_size_desktop
+  assign heading_size_m = section.settings.heading_size_mobile
+  assign heading_ls = section.settings.heading_letter_spacing
+
+  assign card_name_color = section.settings.card_name_color
+  assign card_name_size = section.settings.card_name_size
+  assign card_text_color = section.settings.card_text_color
+  assign card_text_size = section.settings.card_text_size
+  assign card_bg = section.settings.card_bg_color
+  assign section_bg = section.settings.section_bg_color
+
+  assign progress_track = section.settings.progress_track_color
+  assign progress_fill = section.settings.progress_fill_color
+  assign progress_h = section.settings.progress_height
+  assign progress_mt = section.settings.progress_margin_top
+
+  assign aspect = section.settings.image_aspect_ratio
+  assign radius = section.settings.image_border_radius
+
+  assign scroll_behavior = section.settings.scroll_behavior
+
+  assign heading_tag = section.settings.heading_tag
+  assign heading_align = section.settings.heading_alignment
+
+  assign heading_font = section.settings.heading_font
+  assign body_font = section.settings.body_font
+-%}
+
+{%- capture svg_pin -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+{%- endcapture -%}
+{%- capture svg_location -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12l18-9-9 18-2-7-7-2z"/></svg>
+{%- endcapture -%}
+{%- capture svg_building -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/></svg>
+{%- endcapture -%}
+{%- capture svg_map -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5 3 7v14l6-2 6 2 6-2V5l-6 2-6-2z"/><path d="M9 5v14"/><path d="M15 7v14"/></svg>
+{%- endcapture -%}
+{%- capture svg_clock -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+{%- endcapture -%}
+{%- capture svg_watch -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 10v2l1.5 1"/><path d="M9 7V3M15 7V3M9 17v4M15 17v4"/></svg>
+{%- endcapture -%}
+{%- capture svg_calendar -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+{%- endcapture -%}
+{%- capture svg_hourglass -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 3h14M5 21h14"/><path d="M6 3c0 4 6 7 6 9s-6 5-6 9"/><path d="M18 3c0 4-6 7-6 9s6 5 6 9"/></svg>
+{%- endcapture -%}
+{%- capture svg_phone -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+{%- endcapture -%}
+{%- capture svg_mobile -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+{%- endcapture -%}
+{%- capture svg_whatsapp -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.7 13.7L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M8.5 9c.3 1.8 1.7 3.2 3.5 3.5l1-1.3 2.5.8v1.5c-1.7 0-3.4-.6-4.8-1.8S8 9.7 8 8l.5-.5z"/></svg>
+{%- endcapture -%}
+{%- capture svg_message -%}
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.9 7L4 20l1-5a8 8 0 1 1 16-3z"/></svg>
+{%- endcapture -%}
+
+{%- liquid
+  case icon_addr_type
+    when 'pin'
+      assign icon_addr_svg = svg_pin
+    when 'location'
+      assign icon_addr_svg = svg_location
+    when 'building'
+      assign icon_addr_svg = svg_building
+    when 'map'
+      assign icon_addr_svg = svg_map
+    else
+      assign icon_addr_svg = ''
+  endcase
+
+  case icon_hrs_type
+    when 'clock'
+      assign icon_hrs_svg = svg_clock
+    when 'watch'
+      assign icon_hrs_svg = svg_watch
+    when 'calendar'
+      assign icon_hrs_svg = svg_calendar
+    when 'hourglass'
+      assign icon_hrs_svg = svg_hourglass
+    else
+      assign icon_hrs_svg = ''
+  endcase
+
+  case icon_phn_type
+    when 'phone'
+      assign icon_phn_svg = svg_phone
+    when 'mobile'
+      assign icon_phn_svg = svg_mobile
+    when 'whatsapp'
+      assign icon_phn_svg = svg_whatsapp
+    when 'message'
+      assign icon_phn_svg = svg_message
+    else
+      assign icon_phn_svg = ''
+  endcase
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section_id }} {
+    --vut-inset-d: {{ inset_d }}px;
+    --vut-inset-m: {{ inset_m }}px;
+    --vut-card-w: {{ card_w }}px;
+    --vut-card-gap: {{ card_gap }}px;
+    --vut-pad-t: {{ pad_t }}px;
+    --vut-pad-b: {{ pad_b }}px;
+    --vut-mobile-card-w: {{ mobile_card_vw }}vw;
+    --vut-peek-d: {{ peek_d }}px;
+
+    --vut-icon-size: {{ icon_size }}px;
+    --vut-icon-color: {{ icon_color_v }};
+    --vut-icon-stroke: {{ icon_stroke }};
+    --vut-icon-gap: {{ icon_gap }}px;
+    --vut-icon-align: {{ icon_align_css }};
+    --vut-icon-bg: {{ icon_bg_color }};
+    --vut-icon-bg-size: {{ icon_bg_size }}px;
+    --vut-icon-bg-radius: {{ icon_bg_radius_css }};
+    --vut-icon-bg-border-color: {{ icon_bg_border_color }};
+    --vut-icon-bg-border-width: {{ icon_bg_border_width }}px;
+
+    --vut-eyebrow-color: {{ eyebrow_color }};
+    --vut-eyebrow-size: {{ eyebrow_size }}px;
+    --vut-eyebrow-ls: {{ eyebrow_ls }}px;
+
+    --vut-heading-color: {{ heading_color }};
+    --vut-heading-size-d: {{ heading_size_d }}px;
+    --vut-heading-size-m: {{ heading_size_m }}px;
+    --vut-heading-ls: {{ heading_ls }}px;
+
+    --vut-card-name-color: {{ card_name_color }};
+    --vut-card-name-size: {{ card_name_size }}px;
+    --vut-card-text-color: {{ card_text_color }};
+    --vut-card-text-size: {{ card_text_size }}px;
+    --vut-card-bg: {{ card_bg }};
+    --vut-section-bg: {{ section_bg }};
+
+    --vut-progress-track: {{ progress_track }};
+    --vut-progress-fill: {{ progress_fill }};
+    --vut-progress-h: {{ progress_h }}px;
+    --vut-progress-mt: {{ progress_mt }}px;
+
+    --vut-radius: {{ radius }}px;
+
+    background: var(--vut-section-bg);
+  }
+
+  #shopify-section-{{ section_id }} .vut {
+    width: 100%;
+    padding-top: var(--vut-pad-t);
+    padding-bottom: var(--vut-pad-b);
+    font-weight: var(--vut-body-weight);
+    font-style: var(--vut-body-style);
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section_id }} .vut *,
+  #shopify-section-{{ section_id }} .vut *::before,
+  #shopify-section-{{ section_id }} .vut *::after {
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section_id }} .vut__header {
+    padding-left: var(--vut-inset-d);
+    padding-right: var(--vut-inset-d);
+    margin-bottom: 1px;
+    text-align: {{ heading_align }};
+  }
+
+  #shopify-section-{{ section_id }} .vut__eyebrow {
+    display: block;
+    color: var(--vut-eyebrow-color);
+    font-size: var(--vut-eyebrow-size);
+    letter-spacing: var(--vut-eyebrow-ls);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+
+  #shopify-section-{{ section_id }} .vut__heading {
+    display: block;
+    color: var(--vut-heading-color);
+    font-size: var(--vut-heading-size-d);
+    letter-spacing: var(--vut-heading-ls);
+    line-height: 1.05;
+    margin: 0;
+    font-weight: var(--vut-heading-weight);
+    font-style: var(--vut-heading-style);
+  }
+
+  #shopify-section-{{ section_id }} .vut__scroller-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  #shopify-section-{{ section_id }} .vut__scroller {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--vut-inset-d) 0 var(--vut-inset-d);
+    display: flex;
+    gap: var(--vut-card-gap);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: {{ scroll_behavior }};
+    scroll-padding-left: var(--vut-inset-d);
+    {% if section.settings.enable_scroll_snap %}
+    scroll-snap-type: x mandatory;
+    {% endif %}
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    outline: none;
+  }
+  #shopify-section-{{ section_id }} .vut__scroller{
+    display: unset !important;
+  }
+
+  #shopify-section-{{ section_id }} .vut__scroller::-webkit-scrollbar {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+
+  #shopify-section-{{ section_id }} .vut__card {
+    flex: 0 0 min(var(--vut-card-w), calc(100vw - var(--vut-inset-d) - var(--vut-peek-d)));
+    max-width: min(var(--vut-card-w), calc(100vw - var(--vut-inset-d) - var(--vut-peek-d)));
+    {% if section.settings.enable_scroll_snap %}
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    {% endif %}
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    background: var(--vut-card-bg);
+    border-radius: var(--vut-radius);
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section_id }} .vut__card:focus-visible {
+    outline: 2px solid var(--vut-progress-fill);
+    outline-offset: 4px;
+  }
+
+  /* -------- Card style variants -------- */
+  /* 1. Classic — image left, details right (default, inherits base grid) */
+
+  /* 2. Reverse — details left, image right */
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__media {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* 3. Stacked — image on top, details below */
+  #shopify-section-{{ section_id }} .vut__card--stacked {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked .vut__media {
+    aspect-ratio: 16 / 9;
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked .vut__content {
+    padding: 40px 48px;
+  }
+
+  /* 4. Overlay — full image, content over gradient */
+  #shopify-section-{{ section_id }} .vut__card--overlay {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    position: relative;
+    aspect-ratio: 4 / 5;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__media {
+    grid-column: 1;
+    grid-row: 1;
+    aspect-ratio: auto;
+    height: 100%;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__content {
+    grid-column: 1;
+    grid-row: 1;
+    justify-content: flex-end;
+    padding: 48px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__content::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.25) 45%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__name,
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__info,
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__map-link,
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__label {
+    color: #ffffff;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__phone {
+    color: #ffffff;
+  }
+
+  /* 5. Framed — bordered card, image + details stacked with padding */
+  #shopify-section-{{ section_id }} .vut__card--framed {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: calc(var(--vut-radius) + 8px);
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__media {
+    aspect-ratio: 4 / 3;
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__content {
+    padding: 32px 24px 16px;
+  }
+
+  /* 6. Luxury — dark charcoal card with gold accents */
+  #shopify-section-{{ section_id }} .vut__card--luxury {
+    background: #111111;
+    color: #f8f3e9;
+    border-radius: calc(var(--vut-radius) + 10px);
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 20px 60px rgba(0, 0, 0, 0.25);
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__media {
+    filter: brightness(0.92) contrast(1.02);
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__content {
+    padding: 48px 56px;
+    gap: 24px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__name {
+    color: #f8f3e9;
+    position: relative;
+    padding-top: 28px;
+    letter-spacing: -0.025em;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__name::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 56px;
+    height: 1.5px;
+    background: var(--vut-eyebrow-color);
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury:hover .vut__name::before,
+  #shopify-section-{{ section_id }} .vut__card--luxury:focus-within .vut__name::before {
+    width: 88px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__info,
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__address,
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__hours,
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__phone-wrap {
+    color: rgba(248, 243, 233, 0.82);
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__phone {
+    color: rgba(248, 243, 233, 0.92);
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__label {
+    color: var(--vut-eyebrow-color);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 11px;
+    opacity: 0.9;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__map-link {
+    color: var(--vut-eyebrow-color) !important;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__link-divider {
+    background: rgba(248, 243, 233, 0.18);
+    opacity: 1;
+  }
+
+  /* 7. Editorial — oversized magazine-style split with big name */
+  #shopify-section-{{ section_id }} .vut__card--editorial {
+    grid-template-columns: 1.3fr 1fr;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial .vut__media {
+    aspect-ratio: 5 / 6;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial .vut__content {
+    padding: 56px 64px;
+    justify-content: flex-start;
+    gap: 28px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial .vut__name {
+    font-size: calc(var(--vut-card-name-size) * 1.25);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    margin-bottom: 8px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial .vut__name::after {
+    content: '';
+    display: block;
+    width: 64px;
+    height: 2px;
+    background: var(--vut-eyebrow-color);
+    margin-top: 24px;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial:hover .vut__name::after,
+  #shopify-section-{{ section_id }} .vut__card--editorial:focus-within .vut__name::after {
+    width: 104px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial .vut__info {
+    max-width: 360px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial .vut__label {
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    opacity: 0.55;
+  }
+
+  /* 8. Portrait — vertical centered gallery card */
+  #shopify-section-{{ section_id }} .vut__card--portrait {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    background: var(--vut-card-bg);
+    border-radius: calc(var(--vut-radius) + 14px);
+    overflow: hidden;
+    box-shadow:
+      0 1px 3px rgba(17, 17, 17, 0.05),
+      0 10px 30px rgba(17, 17, 17, 0.05);
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__media {
+    aspect-ratio: 3 / 4;
+    border-radius: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__content {
+    padding: 36px 40px 44px;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__name {
+    font-size: calc(var(--vut-card-name-size) * 0.78);
+    letter-spacing: -0.02em;
+    position: relative;
+    padding-bottom: 22px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__name::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 1px;
+    background: var(--vut-eyebrow-color);
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait:hover .vut__name::after,
+  #shopify-section-{{ section_id }} .vut__card--portrait:focus-within .vut__name::after {
+    width: 64px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__info {
+    align-items: center;
+    text-align: center;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__label {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 11px;
+    opacity: 0.6;
+  }
+  #shopify-section-{{ section_id }} .vut__card--portrait .vut__map-link {
+    align-self: center;
+  }
+
+  /* Mobile: collapse all styles to stacked single-column feel, but keep overlay full-bleed */
+  @media (max-width: 767px) {
+    #shopify-section-{{ section_id }} .vut__card--reverse .vut__media,
+    #shopify-section-{{ section_id }} .vut__card--reverse .vut__content {
+      grid-column: 1;
+    }
+    #shopify-section-{{ section_id }} .vut__card--reverse .vut__media {
+      grid-row: 1;
+    }
+    #shopify-section-{{ section_id }} .vut__card--reverse .vut__content {
+      grid-row: 2;
+    }
+    #shopify-section-{{ section_id }} .vut__card--overlay {
+      aspect-ratio: 3 / 4;
+    }
+    /* New premium styles — scale padding + typography down on mobile */
+    #shopify-section-{{ section_id }} .vut__card--luxury .vut__content,
+    #shopify-section-{{ section_id }} .vut__card--editorial .vut__content,
+    #shopify-section-{{ section_id }} .vut__card--portrait .vut__content {
+      padding: 28px 24px;
+      gap: 16px;
+    }
+    #shopify-section-{{ section_id }} .vut__card--editorial .vut__name {
+      font-size: calc(var(--vut-card-name-size) * 0.7);
+    }
+    #shopify-section-{{ section_id }} .vut__card--editorial .vut__media {
+      aspect-ratio: 4 / 5;
+    }
+    #shopify-section-{{ section_id }} .vut__card--portrait .vut__media {
+      aspect-ratio: 4 / 5;
+    }
+  }
+  /* -------- /Card style variants -------- */
+
+  /* -------- Premium polish -------- */
+  #shopify-section-{{ section_id }} .vut__card {
+    transition:
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section_id }} .vut__media img {
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section_id }} .vut__card:hover .vut__media img,
+  #shopify-section-{{ section_id }} .vut__card:focus-within .vut__media img {
+    transform: scale(1.045);
+  }
+
+  #shopify-section-{{ section_id }} .vut__map-link svg {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__map-link:hover svg {
+    transform: translate(3px, -3px);
+  }
+
+  /* Elevated styles — stacked & framed get a premium card feel */
+  #shopify-section-{{ section_id }} .vut__card--stacked {
+    background: var(--vut-card-bg);
+    border-radius: calc(var(--vut-radius) + 6px);
+    box-shadow:
+      0 1px 2px rgba(17, 17, 17, 0.04),
+      0 2px 8px rgba(17, 17, 17, 0.03);
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 6px 16px rgba(17, 17, 17, 0.06),
+      0 24px 48px rgba(17, 17, 17, 0.1);
+  }
+
+  #shopify-section-{{ section_id }} .vut__card--framed {
+    background: var(--vut-card-bg);
+    box-shadow:
+      0 1px 2px rgba(17, 17, 17, 0.03),
+      0 1px 4px rgba(17, 17, 17, 0.02);
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed:hover {
+    transform: translateY(-6px);
+    border-color: rgba(17, 17, 17, 0.18);
+    box-shadow:
+      0 8px 20px rgba(17, 17, 17, 0.06),
+      0 28px 60px rgba(17, 17, 17, 0.1);
+  }
+
+  /* Luxury hover — deeper glow */
+  #shopify-section-{{ section_id }} .vut__card--luxury:hover,
+  #shopify-section-{{ section_id }} .vut__card--luxury:focus-within {
+    transform: translateY(-6px);
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.35),
+      0 28px 72px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Portrait hover — soft elevation */
+  #shopify-section-{{ section_id }} .vut__card--portrait:hover,
+  #shopify-section-{{ section_id }} .vut__card--portrait:focus-within {
+    transform: translateY(-6px);
+    box-shadow:
+      0 6px 20px rgba(17, 17, 17, 0.08),
+      0 28px 60px rgba(17, 17, 17, 0.1);
+  }
+
+  /* Editorial — subtle accent rule hover handled via name::after grow (already defined) */
+
+  /* Overlay — refined typography + glass pill for map link */
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__name {
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay:hover .vut__name,
+  #shopify-section-{{ section_id }} .vut__card--overlay:focus-within .vut__name {
+    transform: translateY(-4px);
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__info {
+    opacity: 0.92;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__map-link {
+    padding: 12px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition:
+      background 0.35s ease,
+      border-color 0.35s ease,
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__map-link:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  /* Classic & reverse typography polish */
+  #shopify-section-{{ section_id }} .vut__card--classic .vut__name,
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__name {
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+  }
+
+  /* Refined divider on hover */
+  #shopify-section-{{ section_id }} .vut__link-divider {
+    transition: opacity 0.35s ease;
+  }
+  #shopify-section-{{ section_id }} .vut__card:hover .vut__link-divider {
+    opacity: 0.3;
+  }
+
+  /* Reduced motion — disable transforms & transitions everywhere in the section */
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section_id }} .vut__card,
+    #shopify-section-{{ section_id }} .vut__card:hover,
+    #shopify-section-{{ section_id }} .vut__media img,
+    #shopify-section-{{ section_id }} .vut__card:hover .vut__media img,
+    #shopify-section-{{ section_id }} .vut__map-link svg,
+    #shopify-section-{{ section_id }} .vut__map-link:hover svg,
+    #shopify-section-{{ section_id }} .vut__card--overlay .vut__name,
+    #shopify-section-{{ section_id }} .vut__card--overlay:hover .vut__name {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+  /* -------- /Premium polish -------- */
+
+  /* -------- Premium card style refinements -------- */
+  /* Section eyebrow gets a leading hairline in the accent color */
+  #shopify-section-{{ section_id }} .vut__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  #shopify-section-{{ section_id }} .vut__eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  /* Animated underline reveal on map link (excluded from overlay's glass pill) */
+  #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay) .vut__map-link:not(.vut__map-link--underline) {
+    padding-bottom: 4px;
+  }
+  #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay) .vut__map-link:not(.vut__map-link--underline)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0.25);
+    transform-origin: left center;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay) .vut__map-link:not(.vut__map-link--underline):hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Classic & Reverse — growing gold accent rule above store name */
+  #shopify-section-{{ section_id }} .vut__card--classic .vut__name,
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__name {
+    position: relative;
+    padding-top: 28px;
+    letter-spacing: -0.028em;
+  }
+  #shopify-section-{{ section_id }} .vut__card--classic .vut__name::before,
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__name::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 2px;
+    background: var(--vut-eyebrow-color);
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--classic:hover .vut__name::before,
+  #shopify-section-{{ section_id }} .vut__card--classic:focus-within .vut__name::before,
+  #shopify-section-{{ section_id }} .vut__card--reverse:hover .vut__name::before,
+  #shopify-section-{{ section_id }} .vut__card--reverse:focus-within .vut__name::before {
+    width: 80px;
+  }
+
+  /* Stacked — elevated surface + ornamental hairline after store name */
+  #shopify-section-{{ section_id }} .vut__card--stacked {
+    background: var(--vut-card-bg);
+    border-radius: calc(var(--vut-radius) + 12px);
+    overflow: hidden;
+    box-shadow:
+      0 1px 2px rgba(17, 17, 17, 0.04),
+      0 6px 20px rgba(17, 17, 17, 0.045);
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked .vut__media {
+    aspect-ratio: 16 / 10;
+    border-radius: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked .vut__content {
+    padding: 40px 44px 44px;
+    gap: 20px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked .vut__name {
+    position: relative;
+    padding-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked .vut__name::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 32px;
+    height: 1px;
+    background: var(--vut-eyebrow-color);
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--stacked:hover .vut__name::after,
+  #shopify-section-{{ section_id }} .vut__card--stacked:focus-within .vut__name::after {
+    width: 56px;
+  }
+
+  /* Overlay — cinematic multi-stop gradient */
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__content::after {
+    background:
+      linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0) 100%),
+      radial-gradient(ellipse 140% 90% at 50% 120%, rgba(0, 0, 0, 0.35) 0%, transparent 60%);
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__content {
+    padding: 48px 44px 44px;
+    gap: 20px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__name {
+    letter-spacing: -0.025em;
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__label {
+    opacity: 0.75;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  /* Framed — gallery-frame effect with subtle inner border */
+  #shopify-section-{{ section_id }} .vut__card--framed {
+    position: relative;
+    background: var(--vut-card-bg);
+    padding: 20px;
+    border: 1px solid rgba(17, 17, 17, 0.1);
+    border-radius: calc(var(--vut-radius) + 6px);
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(17, 17, 17, 0.06);
+    border-radius: calc(var(--vut-radius) + 2px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__media,
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__content {
+    position: relative;
+    z-index: 1;
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__media {
+    border-radius: 2px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__content {
+    padding: 28px 12px 8px;
+    gap: 20px;
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__name {
+    padding-top: 20px;
+    position: relative;
+    letter-spacing: -0.02em;
+  }
+  #shopify-section-{{ section_id }} .vut__card--framed .vut__name::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(17, 17, 17, 0.1);
+  }
+  /* -------- /Premium card style refinements -------- */
+
+  /* -------- Mouse drag-to-scroll (desktop only) -------- */
+  /* Suppress the browser's native image drag so a USB mouse can pan the row */
+  #shopify-section-{{ section_id }} .vut__scroller img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+  }
+  /* While actively dragging with a mouse, disable scroll-snap so the browser
+     doesn't "correct" our programmatic scrollLeft back to the nearest snap. */
+  #shopify-section-{{ section_id }} .vut__scroller.vut--grabbing {
+    scroll-snap-type: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #shopify-section-{{ section_id }} .vut__scroller {
+      cursor: grab;
+    }
+    #shopify-section-{{ section_id }} .vut__scroller.vut--grabbing,
+    #shopify-section-{{ section_id }} .vut__scroller.vut--grabbing * {
+      cursor: grabbing !important;
+    }
+    #shopify-section-{{ section_id }} .vut__scroller.vut--grabbing {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #shopify-section-{{ section_id }} .vut__scroller.vut--grabbing a,
+    #shopify-section-{{ section_id }} .vut__scroller.vut--grabbing img {
+      pointer-events: none;
+    }
+  }
+  /* -------- /Mouse drag-to-scroll -------- */
+
+  /* -------- Premium refinements v2 -------- */
+
+  /* All cards (except overlay which already has its own gradient):
+     subtle bottom-darkening fade in on hover for image depth */
+  #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay) .vut__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.14) 100%);
+    opacity: 0;
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+  #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay):hover .vut__media::after,
+  #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay):focus-within .vut__media::after {
+    opacity: 1;
+  }
+
+  /* Classic + Reverse — hairline tapered divider between image and content */
+  #shopify-section-{{ section_id }} .vut__card--classic .vut__content,
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__content {
+    position: relative;
+  }
+  #shopify-section-{{ section_id }} .vut__card--classic .vut__content::before,
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__content::before {
+    content: '';
+    position: absolute;
+    top: 48px;
+    bottom: 48px;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent 0%, var(--vut-card-text-color) 20%, var(--vut-card-text-color) 80%, transparent 100%);
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__card--classic .vut__content::before { left: 0; }
+  #shopify-section-{{ section_id }} .vut__card--reverse .vut__content::before { right: 0; }
+
+  /* Editorial — large decorative serif numeral from data attribute */
+  #shopify-section-{{ section_id }} .vut__card--editorial {
+    position: relative;
+    overflow: hidden;
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial::before {
+    content: attr(data-card-index);
+    position: absolute;
+    top: 20px;
+    right: 36px;
+    font-weight: var(--vut-heading-weight);
+    font-style: var(--vut-heading-style);
+    font-size: 180px;
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    color: var(--vut-eyebrow-color);
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--editorial:hover::before,
+  #shopify-section-{{ section_id }} .vut__card--editorial:focus-within::before {
+    opacity: 0.18;
+    transform: translateY(-2px);
+  }
+  /* Editorial content must render above the numeral */
+  #shopify-section-{{ section_id }} .vut__card--editorial > .vut__media,
+  #shopify-section-{{ section_id }} .vut__card--editorial > .vut__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Luxury — gold gradient shimmer border on hover (padding-box mask) */
+  #shopify-section-{{ section_id }} .vut__card--luxury {
+    position: relative;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+      rgba(183, 142, 89, 0) 0%,
+      rgba(183, 142, 89, 0.65) 45%,
+      rgba(234, 196, 140, 0.85) 55%,
+      rgba(183, 142, 89, 0) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 2;
+  }
+  #shopify-section-{{ section_id }} .vut__card--luxury:hover::before,
+  #shopify-section-{{ section_id }} .vut__card--luxury:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Overlay — stronger cinematic zoom on hover */
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__media img {
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #shopify-section-{{ section_id }} .vut__card--overlay:hover .vut__media img,
+  #shopify-section-{{ section_id }} .vut__card--overlay:focus-within .vut__media img {
+    transform: scale(1.08);
+  }
+
+  /* Stacked — subtle depth gradient in card background */
+  #shopify-section-{{ section_id }} .vut__card--stacked {
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.02) 100%);
+  }
+
+  /* Portrait — soft top accent tint */
+  #shopify-section-{{ section_id }} .vut__card--portrait {
+    background-image: linear-gradient(to bottom, rgba(183, 142, 89, 0.05) 0%, rgba(0, 0, 0, 0) 45%);
+  }
+
+  /* Framed — tighter inner shadow stack */
+  #shopify-section-{{ section_id }} .vut__card--framed {
+    box-shadow:
+      inset 0 0 0 1px rgba(17, 17, 17, 0.03),
+      0 1px 2px rgba(17, 17, 17, 0.03),
+      0 1px 4px rgba(17, 17, 17, 0.02);
+  }
+
+  /* Mobile: shrink the editorial numeral so it doesn't overwhelm small cards */
+  @media (max-width: 767px) {
+    #shopify-section-{{ section_id }} .vut__card--editorial::before {
+      font-size: 96px;
+      top: 12px;
+      right: 20px;
+    }
+    #shopify-section-{{ section_id }} .vut__card--classic .vut__content::before,
+    #shopify-section-{{ section_id }} .vut__card--reverse .vut__content::before {
+      display: none;
+    }
+  }
+
+  /* Reduced motion — kill the added hover transitions */
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section_id }} .vut__card:not(.vut__card--overlay) .vut__media::after,
+    #shopify-section-{{ section_id }} .vut__card--overlay .vut__media img,
+    #shopify-section-{{ section_id }} .vut__card--overlay:hover .vut__media img,
+    #shopify-section-{{ section_id }} .vut__card--luxury::before,
+    #shopify-section-{{ section_id }} .vut__card--editorial::before {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+  /* -------- /Premium refinements v2 -------- */
+
+  #shopify-section-{{ section_id }} .vut__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: {{ aspect }};
+    overflow: hidden;
+    border-radius: var(--vut-radius);
+    background: #eee;
+  }
+
+  #shopify-section-{{ section_id }} .vut__media img,
+  #shopify-section-{{ section_id }} .vut__media .vut__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: unset;
+    display: block;
+  }
+
+  #shopify-section-{{ section_id }} .vut__placeholder {
+    background: linear-gradient(135deg, #eee, #ddd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 14px;
+  }
+
+  #shopify-section-{{ section_id }} .vut__content {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+    padding: 48px 120px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section_id }} .vut__content-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section_id }} .vut__content > *:not(.vut__content-overlay) {
+    position: relative;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section_id }} .vut__name {
+    color: var(--vut-card-name-color);
+    font-size: var(--vut-card-name-size);
+    font-weight: var(--vut-heading-weight);
+    font-style: var(--vut-heading-style);
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  #shopify-section-{{ section_id }} .vut__info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--vut-card-text-color);
+    font-size: var(--vut-card-text-size);
+    line-height: 1.6;
+  }
+
+  #shopify-section-{{ section_id }} .vut__address {
+    font-style: normal;
+    margin: 0;
+    white-space: pre-line;
+  }
+
+  #shopify-section-{{ section_id }} .vut__hours,
+  #shopify-section-{{ section_id }} .vut__phone-wrap {
+    margin: 0;
+  }
+
+  #shopify-section-{{ section_id }} .vut__label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+    opacity: 0.7;
+  }
+
+  /* -------- Info icons -------- */
+  #shopify-section-{{ section_id }} .vut__info-row {
+    display: flex;
+    align-items: var(--vut-icon-align);
+    gap: var(--vut-icon-gap);
+    margin: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__info-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vut-icon-color);
+    width: var(--vut-icon-size);
+    height: var(--vut-icon-size);
+    line-height: 0;
+    /* Nudge icon slightly for top-align so it visually centers with first line */
+    margin-top: 0;
+  }
+  #shopify-section-{{ section_id }} .vut__icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: var(--vut-icon-stroke);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    overflow: visible;
+  }
+  /* Tiny nudge for top-aligned icons so they sit visually on the text x-height */
+  #shopify-section-{{ section_id }} .vut__info-row.vut__info-row--top .vut__icon:not(.vut__icon--boxed) {
+    margin-top: 0.12em;
+  }
+
+  /* Icon background (circle or rounded square) */
+  #shopify-section-{{ section_id }} .vut__icon--boxed {
+    width: var(--vut-icon-bg-size);
+    height: var(--vut-icon-bg-size);
+    background: var(--vut-icon-bg);
+    border-radius: var(--vut-icon-bg-radius);
+    border: var(--vut-icon-bg-border-width) solid var(--vut-icon-bg-border-color);
+  }
+  #shopify-section-{{ section_id }} .vut__icon--boxed svg {
+    width: var(--vut-icon-size);
+    height: var(--vut-icon-size);
+  }
+
+  /* Overlay style — icons inherit the white overlay text color */
+  #shopify-section-{{ section_id }} .vut__card--overlay .vut__icon {
+    color: #ffffff;
+  }
+  /* Luxury style — icons in gold */
+  #shopify-section-{{ section_id }} .vut__card--luxury .vut__icon {
+    color: var(--vut-eyebrow-color);
+  }
+  /* -------- /Info icons -------- */
+
+  #shopify-section-{{ section_id }} .vut__phone {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section_id }} .vut__phone:hover {
+    text-decoration: underline;
+  }
+
+  #shopify-section-{{ section_id }} .vut__map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--vut-card-text-size);
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    align-self: flex-start;
+  }
+
+  #shopify-section-{{ section_id }} .vut__map-link--underline {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  #shopify-section-{{ section_id }} .vut__map-link:hover {
+    opacity: 0.7;
+  }
+
+  #shopify-section-{{ section_id }} .vut__map-link svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section_id }} .vut__link-divider {
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.15;
+    margin: 0;
+    border: 0;
+  }
+
+  #shopify-section-{{ section_id }} .vut__progress {
+    position: relative;
+    height: var(--vut-progress-h);
+    background: var(--vut-progress-track);
+    margin: var(--vut-progress-mt) var(--vut-inset-d);
+    cursor: pointer;
+    touch-action: none;
+    border-radius: calc(var(--vut-progress-h) / 2);
+  }
+
+  #shopify-section-{{ section_id }} .vut__progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 20%;
+    background: var(--vut-progress-fill);
+    transform-origin: left center;
+    will-change: left, width;
+    border-radius: calc(var(--vut-progress-h) / 2);
+  }
+
+  #shopify-section-{{ section_id }} .vut__empty {
+    padding: 80px var(--vut-inset-d);
+    text-align: center;
+    color: var(--vut-heading-color);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 1024px) {
+    #shopify-section-{{ section_id }} .vut__content {
+      padding: 32px 48px;
+      gap: 24px;
+    }
+    #shopify-section-{{ section_id }} .vut__name {
+      font-size: calc(var(--vut-card-name-size) * 0.75);
+    }
+  }
+
+  @media (max-width: 767px) {
+    #shopify-section-{{ section_id }} .vut__header {
+      padding-left: var(--vut-inset-m);
+      padding-right: var(--vut-inset-m);
+      margin-bottom: 32px;
+    }
+
+    #shopify-section-{{ section_id }} .vut__heading {
+      font-size: var(--vut-heading-size-m);
+    }
+
+    #shopify-section-{{ section_id }} .vut__scroller {
+      padding: 0 var(--vut-inset-m);
+      gap: calc(var(--vut-card-gap) * 0.5);
+    }
+
+    #shopify-section-{{ section_id }} .vut__card {
+      flex: 0 0 var(--vut-mobile-card-w);
+      max-width: var(--vut-mobile-card-w);
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+    }
+
+    #shopify-section-{{ section_id }} .vut__content {
+      padding: 24px 20px;
+      gap: 16px;
+    }
+
+    #shopify-section-{{ section_id }} .vut__name {
+      font-size: calc(var(--vut-card-name-size) * 0.6);
+    }
+
+    #shopify-section-{{ section_id }} .vut__progress {
+      margin: calc(var(--vut-progress-mt) * 0.75) var(--vut-inset-m);
+    }
+
+    #shopify-section-{{ section_id }} .vut__empty {
+      padding: 60px var(--vut-inset-m);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section_id }} .vut__scroller {
+      scroll-behavior: auto;
+    }
+    #shopify-section-{{ section_id }} .vut__progress-fill {
+      transition: none !important;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  class="vut{% if section.settings.custom_class != blank %} {{ section.settings.custom_class | escape }}{% endif %}"
+  aria-labelledby="vut-heading-{{ section_id }}"
+  data-vut-root
+  data-section-id="{{ section_id }}"
+  data-enable-keyboard="{{ section.settings.enable_keyboard_nav }}"
+  data-enable-drag="{{ section.settings.enable_drag_progress }}"
+  data-show-progress="{{ section.settings.show_progress_bar }}"
+  data-enable-loop="{{ section.settings.enable_infinite_loop }}"
+  data-enable-mouse-drag="{{ section.settings.enable_mouse_drag }}"
+  data-enable-auto="{{ section.settings.enable_auto_scroll }}"
+  data-auto-interval="{{ section.settings.auto_scroll_interval | times: 1000 }}"
+  data-pause-on-hover="{{ section.settings.auto_scroll_pause_on_hover }}"
+>
+  <div class="vut__header">
+    {%- if section.settings.eyebrow_text != blank -%}
+      <span class="vut__eyebrow">{{ section.settings.eyebrow_text }}</span>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <{{ heading_tag }} id="vut-heading-{{ section_id }}" class="vut__heading">
+        {{ section.settings.heading }}
+      </{{ heading_tag }}>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="vut__scroller-wrap">
+      <ol
+        class="vut__scroller"
+        id="vut-scroller-{{ section_id }}"
+        data-vut-scroller
+        tabindex="0"
+        aria-label="{{ section.settings.heading | default: 'Store locations' }}"
+      >
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign link_color = block.settings.link_color
+            assign link_underline = block.settings.link_underline
+            assign show_divider = block.settings.show_divider_above_link
+
+            assign bg_type = block.settings.content_bg_type | default: 'none'
+            assign bg_color = block.settings.content_bg_color
+            assign bg_image = block.settings.content_bg_image
+            assign bg_opacity_raw = block.settings.content_bg_overlay_opacity | default: 0
+            assign bg_opacity = bg_opacity_raw | times: 1.0 | divided_by: 100.0
+
+            assign content_style = ''
+            if bg_type == 'color' and bg_color != blank
+              assign content_style = 'background-color: ' | append: bg_color | append: ';'
+            elsif bg_type == 'image' and bg_image != blank
+              assign bg_img_url = bg_image | image_url: width: 1600
+              assign content_style = "background-image: url('" | append: bg_img_url | append: "');"
+            elsif bg_type == 'both' and bg_image != blank
+              assign bg_img_url = bg_image | image_url: width: 1600
+              assign content_style = "background-image: url('" | append: bg_img_url | append: "');"
+            endif
+
+            assign overlay_rgba = ''
+            if bg_type == 'both' and bg_image != blank and bg_color != blank and bg_opacity_raw > 0
+              assign overlay_rgba = bg_color | color_modify: 'alpha', bg_opacity
+            endif
+          -%}
+          {%- assign card_style = block.settings.card_style | default: 'classic' -%}
+          {%- assign block_class = block.settings.custom_class -%}
+          {%- assign card_idx = forloop.index -%}
+          {%- if card_idx < 10 -%}
+            {%- assign card_num_str = '0' | append: card_idx -%}
+          {%- else -%}
+            {%- capture card_num_str -%}{{ card_idx }}{%- endcapture -%}
+          {%- endif -%}
+          <li
+            class="vut__card vut__card--{{ card_style }}{% if block_class != blank %} {{ block_class | escape }}{% endif %}"
+            data-card-style="{{ card_style }}"
+            data-card-index="{{ card_num_str }}"
+            tabindex="0"
+            data-vut-card
+            {{ block.shopify_attributes }}
+          >
+            <div class="vut__media">
+              {%- if block.settings.image != blank -%}
+                {%- assign alt = block.settings.image_alt | default: block.settings.store_name -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 1200 }}"
+                  srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 900 }} 900w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1600 }} 1600w"
+                  sizes="(max-width: 767px) 85vw, 636px"
+                  alt="{{ alt | escape }}"
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                />
+              {%- else -%}
+                <div class="vut__placeholder" aria-hidden="true">
+                  {{ 'image' | placeholder_svg_tag: 'vut__placeholder-svg' }}
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="vut__content"{% if content_style != blank %} style="{{ content_style }}"{% endif %} data-bg-type="{{ bg_type }}">
+              {%- if overlay_rgba != blank -%}
+                <span class="vut__content-overlay" style="background-color: {{ overlay_rgba }};" aria-hidden="true"></span>
+              {%- endif -%}
+              {%- if block.settings.store_name != blank -%}
+                <h3 class="vut__name">{{ block.settings.store_name }}</h3>
+              {%- endif -%}
+
+              {%- assign icon_boxed_class = '' -%}
+              {%- if icon_bg_style != 'none' -%}{%- assign icon_boxed_class = ' vut__icon--boxed' -%}{%- endif -%}
+              {%- assign row_align_class = '' -%}
+              {%- if icon_align_v == 'top' -%}{%- assign row_align_class = ' vut__info-row--top' -%}{%- endif -%}
+
+              <div class="vut__info">
+                {%- if block.settings.address != blank -%}
+                  <address class="vut__address vut__info-row{{ row_align_class }}">
+                    {%- if show_info_icons and icon_addr_svg != blank -%}
+                      <span class="vut__icon{{ icon_boxed_class }}" aria-hidden="true">{{ icon_addr_svg }}</span>
+                    {%- endif -%}
+                    <span class="vut__info-text">{{ block.settings.address }}</span>
+                  </address>
+                {%- endif -%}
+
+                {%- if block.settings.hours != blank -%}
+                  <p class="vut__hours vut__info-row{{ row_align_class }}">
+                    {%- if show_info_icons and icon_hrs_svg != blank -%}
+                      <span class="vut__icon{{ icon_boxed_class }}" aria-hidden="true">{{ icon_hrs_svg }}</span>
+                    {%- endif -%}
+                    <span class="vut__info-text">
+                      <span class="vut__label">Hours</span>
+                      {{ block.settings.hours }}
+                    </span>
+                  </p>
+                {%- endif -%}
+
+                {%- if block.settings.phone != blank -%}
+                  <p class="vut__phone-wrap vut__info-row{{ row_align_class }}">
+                    {%- if show_info_icons and icon_phn_svg != blank -%}
+                      <span class="vut__icon{{ icon_boxed_class }}" aria-hidden="true">{{ icon_phn_svg }}</span>
+                    {%- endif -%}
+                    <span class="vut__info-text">
+                      <span class="vut__label">Phone</span>
+                      {%- if block.settings.phone_link != blank -%}
+                        <a class="vut__phone" href="{{ block.settings.phone_link }}">{{ block.settings.phone }}</a>
+                      {%- else -%}
+                        {{ block.settings.phone }}
+                      {%- endif -%}
+                    </span>
+                  </p>
+                {%- endif -%}
+              </div>
+
+              {%- if show_divider -%}
+                <hr class="vut__link-divider" style="color: {{ link_color }};">
+              {%- endif -%}
+
+              {%- if block.settings.map_link != blank -%}
+                <a
+                  class="vut__map-link{% if link_underline %} vut__map-link--underline{% endif %}"
+                  href="{{ block.settings.map_link }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style="color: {{ link_color }};"
+                >
+                  {{ block.settings.map_link_label | default: 'View on Google Maps' }}
+                  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M6 3h7v7M13 3L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ol>
+
+      {%- if section.settings.show_progress_bar -%}
+        <div
+          class="vut__progress"
+          data-vut-progress
+          role="scrollbar"
+          aria-controls="vut-scroller-{{ section_id }}"
+          aria-orientation="horizontal"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          tabindex="0"
+        >
+          <div class="vut__progress-fill" data-vut-progress-fill></div>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    {%- if request.design_mode -%}
+      <div class="vut__empty">
+        <p><strong>Add your first store location</strong></p>
+        <p>Use the theme editor to add store blocks with images, addresses, hours, and directions.</p>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</section>
+
+<script>
+  (function () {
+    'use strict';
+
+    function initVUT(root) {
+      if (!root || root.__vutInitialised) return;
+      root.__vutInitialised = true;
+
+      var scroller = root.querySelector('[data-vut-scroller]');
+      if (!scroller) return;
+
+      var progress = root.querySelector('[data-vut-progress]');
+      var fill = root.querySelector('[data-vut-progress-fill]');
+
+      var enableKeyboard = root.getAttribute('data-enable-keyboard') === 'true';
+      var enableDrag = root.getAttribute('data-enable-drag') === 'true';
+      var showProgress = root.getAttribute('data-show-progress') === 'true';
+      var enableLoop = root.getAttribute('data-enable-loop') === 'true';
+      var enableAuto = root.getAttribute('data-enable-auto') === 'true';
+      var enableMouseDrag = root.getAttribute('data-enable-mouse-drag') === 'true';
+      var autoInterval = parseInt(root.getAttribute('data-auto-interval'), 10) || 4000;
+      var pauseOnHover = root.getAttribute('data-pause-on-hover') !== 'false';
+
+      // Hoisted API so mouse-drag (defined later) can call into auto-scroll
+      var autoAPI = { pause: function () {}, resume: function () {} };
+      // Shared flag so loop wrap-detection can suspend itself while the user is dragging
+      var isUserDragging = false;
+
+      var reduceMotion =
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ---- Infinite loop setup (clones once before + once after real set) ----
+      var originalCards = Array.prototype.slice.call(
+        scroller.querySelectorAll('[data-vut-card]:not([data-vut-clone])')
+      );
+      var realCount = originalCards.length;
+      var isWrapping = false;
+
+      if (enableLoop && realCount > 1) {
+        var fragPre = document.createDocumentFragment();
+        var fragPost = document.createDocumentFragment();
+        function markClone(clone, kind) {
+          clone.setAttribute('aria-hidden', 'true');
+          clone.setAttribute('data-vut-clone', kind);
+          clone.setAttribute('tabindex', '-1');
+          clone.removeAttribute('id');
+          // Prefer inert (removes from tab order + AT tree); fall back to per-child tabindex
+          if ('inert' in HTMLElement.prototype) {
+            clone.inert = true;
+          } else {
+            clone.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function (el) {
+              el.setAttribute('tabindex', '-1');
+            });
+          }
+        }
+        originalCards.forEach(function (card) {
+          var pre = card.cloneNode(true);
+          markClone(pre, 'pre');
+          fragPre.appendChild(pre);
+
+          var post = card.cloneNode(true);
+          markClone(post, 'post');
+          fragPost.appendChild(post);
+        });
+        scroller.appendChild(fragPost);
+        scroller.insertBefore(fragPre, scroller.firstChild);
+      }
+
+      // Cards list AFTER any cloning — used for keyboard/focus
+      var cards = scroller.querySelectorAll('[data-vut-card]');
+
+      function getCycleMetrics() {
+        if (!enableLoop || realCount < 2) return null;
+        var firstReal = scroller.querySelector('[data-vut-card]:not([data-vut-clone])');
+        if (!firstReal) return null;
+        var cardW = firstReal.getBoundingClientRect().width;
+        var style = window.getComputedStyle(scroller);
+        var gap = parseFloat(style.columnGap || style.gap || '0') || 0;
+        var cycle = realCount * (cardW + gap);
+        return { cardW: cardW, gap: gap, cycle: cycle, firstReal: firstReal };
+      }
+
+      // Position scroller at the first real card after clones are laid out.
+      if (enableLoop && realCount > 1) {
+        requestAnimationFrame(function () {
+          var m = getCycleMetrics();
+          if (!m) return;
+          var insetPx = parseFloat(window.getComputedStyle(scroller).scrollPaddingLeft) || 0;
+          isWrapping = true;
+          scroller.scrollLeft = m.firstReal.offsetLeft - insetPx;
+          requestAnimationFrame(function () { isWrapping = false; });
+        });
+      }
+
+      var rafId = null;
+
+      function updateProgress() {
+        rafId = null;
+        if (!progress || !fill || !showProgress) return;
+
+        // Loop-aware progress: show position within the real set
+        if (enableLoop && realCount > 1) {
+          var m = getCycleMetrics();
+          if (m && m.cycle > 0) {
+            var cw = scroller.clientWidth;
+            var rel = (((scroller.scrollLeft - m.cycle) % m.cycle) + m.cycle) % m.cycle;
+            var viewPct = Math.min(100, (cw / m.cycle) * 100);
+            var leftPct = Math.min(100 - viewPct, (rel / m.cycle) * 100);
+            fill.style.left = leftPct + '%';
+            fill.style.width = viewPct + '%';
+            progress.setAttribute('aria-valuenow', String(Math.round((rel / m.cycle) * 100)));
+            return;
+          }
+        }
+
+        var sw = scroller.scrollWidth;
+        var cwNat = scroller.clientWidth;
+        var sl = scroller.scrollLeft;
+
+        if (sw <= cwNat) {
+          fill.style.left = '0%';
+          fill.style.width = '100%';
+          progress.setAttribute('aria-valuenow', '0');
+          return;
+        }
+
+        var widthPct = (cwNat / sw) * 100;
+        var leftPct2 = (sl / sw) * 100;
+        fill.style.left = leftPct2 + '%';
+        fill.style.width = widthPct + '%';
+
+        var maxScroll = sw - cwNat;
+        var pct = maxScroll > 0 ? Math.round((sl / maxScroll) * 100) : 0;
+        progress.setAttribute('aria-valuenow', String(pct));
+      }
+
+      function scheduleUpdate() {
+        if (rafId !== null) return;
+        rafId = requestAnimationFrame(updateProgress);
+      }
+
+      // Wrap detection: when scroll idles, jump silently if we're in a clone zone.
+      var wrapTimer = null;
+      function maybeWrap() {
+        if (!enableLoop || realCount < 2 || isWrapping || isUserDragging) return;
+        var m = getCycleMetrics();
+        if (!m || m.cycle <= 0) return;
+        var lower = m.cycle;
+        var upper = 2 * m.cycle;
+        var sl = scroller.scrollLeft;
+        var prevBehavior = scroller.style.scrollBehavior;
+        if (sl >= upper - 1) {
+          isWrapping = true;
+          scroller.style.scrollBehavior = 'auto';
+          scroller.scrollLeft = sl - m.cycle;
+          scroller.style.scrollBehavior = prevBehavior;
+          requestAnimationFrame(function () { isWrapping = false; });
+        } else if (sl < lower) {
+          isWrapping = true;
+          scroller.style.scrollBehavior = 'auto';
+          scroller.scrollLeft = sl + m.cycle;
+          scroller.style.scrollBehavior = prevBehavior;
+          requestAnimationFrame(function () { isWrapping = false; });
+        }
+      }
+
+      function scheduleWrap() {
+        if (!enableLoop) return;
+        clearTimeout(wrapTimer);
+        wrapTimer = setTimeout(maybeWrap, 90);
+      }
+
+      scroller.addEventListener('scroll', function () {
+        scheduleUpdate();
+        scheduleWrap();
+      }, { passive: true });
+      window.addEventListener('resize', scheduleUpdate);
+
+      // Initial paint
+      updateProgress();
+
+      // Keyboard navigation
+      if (enableKeyboard) {
+        function getStep() {
+          var first = cards[0];
+          if (!first) return scroller.clientWidth;
+          var style = window.getComputedStyle(scroller);
+          var gap = parseFloat(style.columnGap || style.gap || '0') || 0;
+          return first.getBoundingClientRect().width + gap;
+        }
+
+        scroller.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            var step = getStep();
+            scroller.scrollBy({
+              left: e.key === 'ArrowRight' ? step : -step,
+              behavior: reduceMotion ? 'auto' : 'smooth',
+            });
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            scroller.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            scroller.scrollTo({
+              left: scroller.scrollWidth,
+              behavior: reduceMotion ? 'auto' : 'smooth',
+            });
+          }
+        });
+
+        // When a card gets focus, keep it visible
+        cards.forEach(function (card) {
+          card.addEventListener('focus', function () {
+            var cardRect = card.getBoundingClientRect();
+            var wrapRect = scroller.getBoundingClientRect();
+            if (cardRect.left < wrapRect.left || cardRect.right > wrapRect.right) {
+              card.scrollIntoView({
+                behavior: reduceMotion ? 'auto' : 'smooth',
+                inline: 'start',
+                block: 'nearest',
+              });
+            }
+          });
+        });
+      }
+
+      // Drag / click on progress bar
+      if (enableDrag && progress && showProgress) {
+        var dragging = false;
+
+        function pointerToScroll(clientX) {
+          var rect = progress.getBoundingClientRect();
+          if (rect.width <= 0) return;
+          var ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+          var cw = scroller.clientWidth;
+
+          // Loop-aware: map ratio to position within the real set
+          if (enableLoop && realCount > 1) {
+            var m = getCycleMetrics();
+            if (m && m.cycle > 0) {
+              var within = ratio * m.cycle - cw / 2;
+              var target = m.cycle + Math.max(0, Math.min(m.cycle - cw, within));
+              scroller.scrollTo({
+                left: target,
+                behavior: dragging || reduceMotion ? 'auto' : 'smooth',
+              });
+              return;
+            }
+          }
+
+          var sw = scroller.scrollWidth;
+          var maxScroll = Math.max(0, sw - cw);
+          var target2 = ratio * sw - cw / 2;
+          target2 = Math.max(0, Math.min(maxScroll, target2));
+          scroller.scrollTo({
+            left: target2,
+            behavior: dragging || reduceMotion ? 'auto' : 'smooth',
+          });
+        }
+
+        progress.addEventListener('pointerdown', function (e) {
+          dragging = true;
+          try { progress.setPointerCapture(e.pointerId); } catch (err) {}
+          pointerToScroll(e.clientX);
+        });
+        progress.addEventListener('pointermove', function (e) {
+          if (!dragging) return;
+          pointerToScroll(e.clientX);
+        });
+        function endDrag(e) {
+          if (!dragging) return;
+          dragging = false;
+          try { progress.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+        progress.addEventListener('pointerup', endDrag);
+        progress.addEventListener('pointercancel', endDrag);
+
+        // Keyboard support on scrollbar element
+        progress.addEventListener('keydown', function (e) {
+          var sw = scroller.scrollWidth;
+          var cw = scroller.clientWidth;
+          var maxScroll = Math.max(0, sw - cw);
+          if (!maxScroll) return;
+          var step = cw * 0.25;
+          var left = scroller.scrollLeft;
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            scroller.scrollTo({ left: Math.min(maxScroll, left + step), behavior: reduceMotion ? 'auto' : 'smooth' });
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            scroller.scrollTo({ left: Math.max(0, left - step), behavior: reduceMotion ? 'auto' : 'smooth' });
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            scroller.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            scroller.scrollTo({ left: maxScroll, behavior: reduceMotion ? 'auto' : 'smooth' });
+          }
+        });
+      }
+
+      // ---- Auto-scroll ----
+      if (enableAuto && !reduceMotion && cards.length > 1) {
+        var autoTimer = null;
+        var autoPaused = false;
+
+        function autoStep() {
+          var firstCard = cards[0];
+          if (!firstCard) return;
+          var style = window.getComputedStyle(scroller);
+          var gap = parseFloat(style.columnGap || style.gap || '0') || 0;
+          var step = firstCard.getBoundingClientRect().width + gap;
+          var sw = scroller.scrollWidth;
+          var cw = scroller.clientWidth;
+          var sl = scroller.scrollLeft;
+          var nextLeft = sl + step;
+
+          if (!enableLoop && nextLeft >= sw - cw - 1) {
+            // Snap back to start at the end (non-loop fallback cycle)
+            scroller.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            scroller.scrollTo({ left: nextLeft, behavior: 'smooth' });
+          }
+        }
+
+        function startAuto() {
+          if (autoTimer || autoPaused) return;
+          autoTimer = setInterval(function () {
+            if (document.hidden) return;
+            autoStep();
+          }, autoInterval);
+        }
+        function stopAuto() {
+          if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+        }
+        function pauseAuto() { autoPaused = true; stopAuto(); }
+        function resumeAuto() { autoPaused = false; startAuto(); }
+        autoAPI.pause = pauseAuto;
+        autoAPI.resume = resumeAuto;
+
+        if (pauseOnHover) {
+          root.addEventListener('pointerenter', pauseAuto);
+          root.addEventListener('pointerleave', resumeAuto);
+          root.addEventListener('focusin', pauseAuto);
+          root.addEventListener('focusout', resumeAuto);
+        }
+        // Always pause during active touch drag
+        scroller.addEventListener('touchstart', pauseAuto, { passive: true });
+        scroller.addEventListener('touchend', function () {
+          setTimeout(resumeAuto, 400);
+        }, { passive: true });
+
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) stopAuto(); else if (!autoPaused) startAuto();
+        });
+
+        // Pause while section is off-screen to save CPU
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                if (!autoPaused) startAuto();
+              } else {
+                stopAuto();
+              }
+            });
+          }, { threshold: 0.1 });
+          io.observe(root);
+        } else {
+          startAuto();
+        }
+      }
+
+      // ---- Mouse drag-to-scroll (desktop only) ----
+      if (enableMouseDrag) {
+        var md = { active: false, pointerId: -1, startX: 0, startScroll: 0, moved: false };
+        var DRAG_THRESHOLD = 4;
+
+        // Disable native image drag so a USB mouse can't start a drag-n-drop
+        scroller.querySelectorAll('img').forEach(function (img) {
+          img.setAttribute('draggable', 'false');
+        });
+
+        scroller.addEventListener('pointerdown', function (e) {
+          if (e.pointerType !== 'mouse' || e.button !== 0) return;
+          if (e.target && e.target.closest && e.target.closest('[data-vut-progress]')) return;
+          md.active = true;
+          md.pointerId = e.pointerId;
+          md.startX = e.clientX;
+          md.startScroll = scroller.scrollLeft;
+          md.moved = false;
+          // Capture immediately so a fast-moving mouse doesn't escape the scroller
+          // box before we've engaged — otherwise pointermove events stop arriving.
+          try { scroller.setPointerCapture(e.pointerId); } catch (err) {}
+        });
+
+        // Handler shared by scroller-capture path AND the document fallback path
+        function handleMove(e) {
+          if (!md.active || e.pointerId !== md.pointerId) return;
+          if (e.pointerType && e.pointerType !== 'mouse') return;
+          var dx = e.clientX - md.startX;
+          if (!md.moved) {
+            if (Math.abs(dx) < DRAG_THRESHOLD) return;
+            md.moved = true;
+            isUserDragging = true;
+            scroller.classList.add('vut--grabbing');
+            autoAPI.pause();
+          }
+          if (e.cancelable) e.preventDefault();
+          var prev = scroller.style.scrollBehavior;
+          scroller.style.scrollBehavior = 'auto';
+          scroller.scrollLeft = md.startScroll - dx;
+          scroller.style.scrollBehavior = prev;
+        }
+        scroller.addEventListener('pointermove', handleMove);
+        // Fallback: if pointer capture isn't honoured (rare), document still sees moves
+        document.addEventListener('pointermove', handleMove);
+
+        function endMouseDrag(e) {
+          if (!md.active) return;
+          if (e && e.pointerId !== undefined && e.pointerId !== md.pointerId) return;
+          var wasMoved = md.moved;
+          try { scroller.releasePointerCapture(md.pointerId); } catch (err) {}
+          md.active = false;
+          isUserDragging = false;
+          if (wasMoved) {
+            scroller.classList.remove('vut--grabbing');
+            autoAPI.resume();
+            // Swallow the synthetic click that follows a drag
+            var blocker = function (ev) {
+              ev.stopPropagation();
+              ev.preventDefault();
+            };
+            scroller.addEventListener('click', blocker, true);
+            setTimeout(function () {
+              scroller.removeEventListener('click', blocker, true);
+            }, 80);
+          }
+          md.pointerId = -1;
+        }
+
+        scroller.addEventListener('pointerup', endMouseDrag);
+        scroller.addEventListener('pointercancel', endMouseDrag);
+        scroller.addEventListener('lostpointercapture', endMouseDrag);
+        document.addEventListener('pointerup', endMouseDrag);
+        document.addEventListener('pointercancel', endMouseDrag);
+
+        // Kill native drag + text-selection for the whole active drag (not just post-threshold)
+        scroller.addEventListener('dragstart', function (e) {
+          if (md.active) e.preventDefault();
+        });
+        scroller.addEventListener('selectstart', function (e) {
+          if (md.active) e.preventDefault();
+        });
+      }
+    }
+
+    function initAll() {
+      var roots = document.querySelectorAll('[data-vut-root]');
+      roots.forEach(initVUT);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
+
+    // Shopify section rendering API hooks
+    if (typeof document !== 'undefined') {
+      document.addEventListener('shopify:section:load', function (e) {
+        var root = e.target.querySelector('[data-vut-root]');
+        if (root) initVUT(root);
+      });
+      document.addEventListener('shopify:section:reorder', function (e) {
+        var root = e.target.querySelector('[data-vut-root]');
+        if (root) initVUT(root);
+      });
+      document.addEventListener('shopify:block:select', function (e) {
+        var card = e.target.closest('[data-vut-card]');
+        if (card && card.scrollIntoView) {
+          card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Visit Us Today",
+  "tag": "section",
+  "class": "section-visit-us-today",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "text", "id": "eyebrow_text", "label": "Eyebrow text", "default": "stores" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Visit us Today" },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    { "type": "range", "id": "content_width", "label": "Card width", "min": 800, "max": 1600, "step": 8, "default": 1272, "unit": "px" },
+    { "type": "range", "id": "card_gap", "label": "Card gap", "min": 0, "max": 80, "step": 2, "default": 32, "unit": "px" },
+    { "type": "range", "id": "section_padding_top", "label": "Section padding top", "min": 0, "max": 160, "step": 4, "default": 80, "unit": "px" },
+    { "type": "range", "id": "section_padding_bottom", "label": "Section padding bottom", "min": 0, "max": 160, "step": 4, "default": 80, "unit": "px" },
+    { "type": "range", "id": "left_inset_desktop", "label": "Left inset (desktop)", "min": 0, "max": 400, "step": 4, "default": 320, "unit": "px" },
+    { "type": "range", "id": "left_inset_mobile", "label": "Left inset (mobile)", "min": 0, "max": 80, "step": 2, "default": 20, "unit": "px" },
+
+    { "type": "header", "content": "Typography & Colors" },
+    { "type": "color", "id": "eyebrow_color", "label": "Eyebrow color", "default": "#B78E59" },
+    { "type": "range", "id": "eyebrow_size", "label": "Eyebrow size", "min": 10, "max": 20, "step": 1, "default": 12, "unit": "px" },
+    { "type": "range", "id": "eyebrow_letter_spacing", "label": "Eyebrow letter spacing", "min": 0, "max": 4, "step": 0.1, "default": 1.2, "unit": "px" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1E1E1E" },
+    { "type": "range", "id": "heading_size_desktop", "label": "Heading size (desktop)", "min": 24, "max": 96, "step": 1, "default": 56, "unit": "px" },
+    { "type": "range", "id": "heading_size_mobile", "label": "Heading size (mobile)", "min": 20, "max": 56, "step": 1, "default": 32, "unit": "px" },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Heading letter spacing", "min": -4, "max": 2, "step": 0.1, "default": -2.2, "unit": "px" },
+
+    { "type": "color", "id": "card_name_color", "label": "Card name color", "default": "#141414" },
+    { "type": "range", "id": "card_name_size", "label": "Card name size", "min": 20, "max": 64, "step": 1, "default": 40, "unit": "px" },
+    { "type": "color", "id": "card_text_color", "label": "Card text color", "default": "#141414" },
+    { "type": "range", "id": "card_text_size", "label": "Card text size", "min": 12, "max": 20, "step": 1, "default": 14, "unit": "px" },
+    { "type": "color", "id": "card_bg_color", "label": "Card background", "default": "#FFFFFF" },
+    { "type": "color", "id": "section_bg_color", "label": "Section background", "default": "#FFFFFF" },
+
+    { "type": "font_picker", "id": "heading_font", "label": "Heading font", "default": "playfair_display_n4" },
+    { "type": "font_picker", "id": "body_font", "label": "Body font", "default": "assistant_n4" },
+
+    { "type": "header", "content": "Progress Bar" },
+    { "type": "checkbox", "id": "show_progress_bar", "label": "Show progress bar", "default": true },
+    { "type": "color", "id": "progress_track_color", "label": "Progress track color", "default": "#F2EAD6" },
+    { "type": "color", "id": "progress_fill_color", "label": "Progress fill color", "default": "#C45434" },
+    { "type": "range", "id": "progress_height", "label": "Progress height", "min": 1, "max": 8, "step": 1, "default": 2, "unit": "px" },
+    { "type": "range", "id": "progress_margin_top", "label": "Progress spacing above", "min": 0, "max": 80, "step": 2, "default": 32, "unit": "px" },
+
+    { "type": "header", "content": "Behavior" },
+    { "type": "checkbox", "id": "enable_scroll_snap", "label": "Enable scroll snap", "default": true },
+    { "type": "checkbox", "id": "enable_keyboard_nav", "label": "Enable keyboard navigation", "default": true },
+    { "type": "checkbox", "id": "enable_drag_progress", "label": "Enable drag-to-scroll on progress bar", "default": true },
+    { "type": "checkbox", "id": "enable_mouse_drag", "label": "Enable mouse drag-to-scroll (desktop)", "info": "Click and drag anywhere on the row to pan horizontally.", "default": true },
+    { "type": "checkbox", "id": "enable_infinite_loop", "label": "Enable infinite loop", "info": "Seamlessly loops back to the start so users can scroll forever.", "default": false },
+    { "type": "checkbox", "id": "enable_auto_scroll", "label": "Enable auto-scroll", "default": false },
+    { "type": "range", "id": "auto_scroll_interval", "label": "Auto-scroll interval", "min": 2, "max": 10, "step": 1, "default": 4, "unit": "s" },
+    { "type": "checkbox", "id": "auto_scroll_pause_on_hover", "label": "Pause auto-scroll on hover / focus", "default": true },
+    {
+      "type": "select",
+      "id": "scroll_behavior",
+      "label": "Scroll behavior",
+      "options": [
+        { "value": "smooth", "label": "Smooth" },
+        { "value": "auto", "label": "Instant" }
+      ],
+      "default": "smooth"
+    },
+    { "type": "range", "id": "mobile_card_width_vw", "label": "Mobile card width", "min": 60, "max": 100, "step": 1, "default": 85, "unit": "%" },
+    { "type": "range", "id": "peek_width_desktop", "label": "Next card peek (desktop)", "info": "How much of the next card stays visible after snap.", "min": 0, "max": 600, "step": 8, "default": 240, "unit": "px" },
+
+    { "type": "header", "content": "Info Icons" },
+    { "type": "checkbox", "id": "show_info_icons", "label": "Show icons before address, hours, phone", "default": true },
+    {
+      "type": "select",
+      "id": "icon_address_type",
+      "label": "Address icon",
+      "options": [
+        { "value": "pin", "label": "Map pin" },
+        { "value": "location", "label": "Location arrow" },
+        { "value": "building", "label": "Building / shop" },
+        { "value": "map", "label": "Map" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "pin"
+    },
+    {
+      "type": "select",
+      "id": "icon_hours_type",
+      "label": "Hours icon",
+      "options": [
+        { "value": "clock", "label": "Clock" },
+        { "value": "watch", "label": "Watch" },
+        { "value": "calendar", "label": "Calendar" },
+        { "value": "hourglass", "label": "Hourglass" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "clock"
+    },
+    {
+      "type": "select",
+      "id": "icon_phone_type",
+      "label": "Phone icon",
+      "options": [
+        { "value": "phone", "label": "Phone (handset)" },
+        { "value": "mobile", "label": "Mobile" },
+        { "value": "whatsapp", "label": "WhatsApp" },
+        { "value": "message", "label": "Message bubble" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "phone"
+    },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 12, "max": 32, "step": 1, "default": 18, "unit": "px" },
+    { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#141414" },
+    { "type": "range", "id": "icon_stroke_width", "label": "Icon stroke width", "min": 1, "max": 3, "step": 0.1, "default": 1.5, "unit": "px" },
+    { "type": "range", "id": "icon_gap", "label": "Gap between icon and text", "min": 4, "max": 24, "step": 1, "default": 12, "unit": "px" },
+    {
+      "type": "select",
+      "id": "icon_align",
+      "label": "Icon vertical alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "select",
+      "id": "icon_background_style",
+      "label": "Icon background",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "circle", "label": "Circle" },
+        { "value": "square", "label": "Rounded square" }
+      ],
+      "default": "none"
+    },
+    { "type": "color", "id": "icon_background_color", "label": "Icon background color", "default": "#F5F0E6" },
+    { "type": "range", "id": "icon_background_size", "label": "Icon background size", "min": 24, "max": 56, "step": 1, "default": 36, "unit": "px" },
+    { "type": "range", "id": "icon_background_radius", "label": "Icon background border radius", "min": 0, "max": 28, "step": 1, "default": 10, "unit": "px" },
+    { "type": "color", "id": "icon_background_border_color", "label": "Icon background border color", "default": "rgba(0,0,0,0)" },
+    { "type": "range", "id": "icon_background_border_width", "label": "Icon background border width", "min": 0, "max": 4, "step": 1, "default": 0, "unit": "px" },
+
+    { "type": "header", "content": "Image" },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "1 / 1", "label": "1:1 (Square)" },
+        { "value": "4 / 5", "label": "4:5 (Portrait)" },
+        { "value": "3 / 4", "label": "3:4 (Portrait)" },
+        { "value": "16 / 9", "label": "16:9 (Landscape)" }
+      ],
+      "default": "1 / 1"
+    },
+    { "type": "range", "id": "image_border_radius", "label": "Image border radius", "min": 0, "max": 40, "step": 1, "default": 0, "unit": "px" },
+
+    { "type": "header", "content": "Advanced" },
+    { "type": "text", "id": "custom_class", "label": "Custom CSS class", "info": "Space-separated class names added to the <section> wrapper (for targeting from theme CSS)." }
+  ],
+  "blocks": [
+    {
+      "type": "store",
+      "name": "Store",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "select",
+          "id": "card_style",
+          "label": "Card style",
+          "info": "Choose a visual layout for this store card.",
+          "options": [
+            { "value": "classic", "label": "Classic — image left, details right" },
+            { "value": "reverse", "label": "Reverse — details left, image right" },
+            { "value": "stacked", "label": "Stacked — image on top, details below" },
+            { "value": "overlay", "label": "Overlay — full image with text on gradient" },
+            { "value": "framed", "label": "Framed — bordered card, image and details stacked" },
+            { "value": "luxury", "label": "Luxury — dark card with gold accents" },
+            { "value": "editorial", "label": "Editorial — oversized magazine split" },
+            { "value": "portrait", "label": "Portrait — centered vertical gallery card" }
+          ],
+          "default": "classic"
+        },
+        { "type": "image_picker", "id": "image", "label": "Store image" },
+        { "type": "text", "id": "image_alt", "label": "Image alt text" },
+        { "type": "text", "id": "store_name", "label": "Store name", "default": "Store Name" },
+        { "type": "textarea", "id": "address", "label": "Address", "default": "123 Example Street\nCity, State 000000" },
+        { "type": "text", "id": "hours", "label": "Hours", "default": "Mon–Sun, 10:00 AM – 9:00 PM" },
+        { "type": "text", "id": "phone", "label": "Phone", "default": "+91 00000 00000" },
+        { "type": "url", "id": "phone_link", "label": "Phone link (tel:)" },
+        { "type": "url", "id": "map_link", "label": "Google Maps link" },
+        { "type": "text", "id": "map_link_label", "label": "Map link label", "default": "View on Google Maps" },
+        { "type": "color", "id": "link_color", "label": "Link color", "default": "#141414" },
+        { "type": "checkbox", "id": "link_underline", "label": "Underline link", "default": false },
+        { "type": "checkbox", "id": "show_divider_above_link", "label": "Show divider above link", "default": false },
+
+        { "type": "header", "content": "Right-side content background" },
+        {
+          "type": "select",
+          "id": "content_bg_type",
+          "label": "Background type",
+          "info": "Choose how the right-side content area should be styled.",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "color", "label": "Color only" },
+            { "value": "image", "label": "Image only" },
+            { "value": "both", "label": "Image + color overlay" }
+          ],
+          "default": "none"
+        },
+        { "type": "color", "id": "content_bg_color", "label": "Background color", "default": "#F5F0E6" },
+        { "type": "image_picker", "id": "content_bg_image", "label": "Background image" },
+        { "type": "range", "id": "content_bg_overlay_opacity", "label": "Overlay opacity (for Image + color)", "min": 0, "max": 100, "step": 5, "default": 40, "unit": "%" },
+
+        { "type": "header", "content": "Advanced" },
+        { "type": "text", "id": "custom_class", "label": "Custom CSS class", "info": "Space-separated class names added to this card's <li>." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Visit Us Today",
+      "blocks": [
+        { "type": "store" },
+        { "type": "store" },
+        { "type": "store" },
+        { "type": "store" }
+      ]
+    }
+  ]
+}
+{% endschema %}

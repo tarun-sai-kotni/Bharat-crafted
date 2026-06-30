@@ -46,11 +46,48 @@
       padding: 10px 10px;
   }
 
-  .m-section__header
-   {
-      margin-bottom: 42px;
+  @media screen and (max-width: 767px) {
+        .section-change .m-section__header {
+            display: block !important;
+        }
+        .m-product-tabs .m-section__heading {
+            margin-bottom: 30px;
+        }
+    }
+
+  .section-change .m-section__header {
+      display: flex;
+      justify-content: space-between;
   }
 
+  .m-product-tabs .m-section__tabs {
+        margin-top: 0px !important;
+    }
+
+    .m-tab-header:after{
+        background: transparent;
+    }
+
+    
+    .m-tab-header.active, .m-tab-header:hover {
+        color: #ffffffff !important;
+        background: #044704 !important;
+        border: 1px dashed #044704;
+        padding: 4px 26px !important;
+    }
+
+    .m-product-tabs--horizontal .m-tab-header {
+        padding: 3px 25px !important;
+        border-radius: 4px;
+        transition: all .35s ease;
+        color: #044704;
+        text-decoration: none;
+        border: 1px dashed #044704;
+    }
+
+    .m-product-tabs .m-tabs__wrapper {
+        gap: 24px;
+    }
 
   @media (min-width: 199px) and (max-width: 769px) {
       .m-product-quickview .m-product-info--wrapper {
@@ -361,12 +398,7 @@
   right: 0;
   bottom: 0;
   height: 40%;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.75) 0%,
-    rgba(0,0,0,0.4) 73%,
-    rgba(0,0,0,0) 100%
-  );
+  background: linear-gradient(to top, rgb(0 0 0) 0%, rgba(0, 0, 0, 0.4) 66% 58%, rgba(0, 0, 0, 0) 100%);
   pointer-events: none;
 }
 .trending .m-collection-card__info .m-button--white::before{
@@ -424,4 +456,68 @@
         transform: translate3d(3px, 0, 0);
     }
 }
+
+.m-product-card {
+    padding: 8px;
+    transition: 0.3s;
+    border: 1px solid #c5bfb1c9;
+    box-shadow: 0px 5px 18px rgba(219, 219, 219, 0);
+}
+
+.m-product-card__background-expand {
+    position: relative !important;
+}
+
+{% comment %} .m-product-card__media a{
+    border: 1px solid #11111117;
+} {% endcomment %}
+
+@media(max-width:767px){
+    .block-text {
+        display: flex;
+        column-gap: 8px;
+    }
+}
+
+.vut__card  .vut__content {
+    background-image: url(https://cdn.pixelbin.io/v2/patient-paper-41f385/original/Tech/pattern_4.svg);
+    background-repeat: repeat !important;
+    background-size: auto !important;
+}
+
+.heading-img .m-section__heading::before {
+    content: "";
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-image: url(https://cdn.shopify.com/s/files/1/0834/1313/9692/files/Bharat_Crafted_Heading_Images.png?v=1782199852);
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    transform-origin: bottom center;
+}
+
+.heading-img .m-section__heading::after {
+    content: "";
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-image: url(https://cdn.shopify.com/s/files/1/0834/1313/9692/files/Bharat_Crafted_Heading_Images.png?v=1782199852);
+    transform: scaleX(-1);
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    transform-origin: bottom center;
+}
+
+.rte h3 {
+    font-size: 32px;
+}
+
+.shopify-policy__title {
+    border: solid #000;
+    border-width: 0 0 1px 0;
+    margin-bottom: 36px;
+}
+
 </style>

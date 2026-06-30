@@ -1,0 +1,241 @@
+{{ 'section-about-bharatcrafted.css' | asset_url | stylesheet_tag }}
+
+<div class="bc-about">
+
+  <!-- HERO -->
+  <section class="bc-hero">
+    <div class="bc-hero__pattern"></div>
+    <div class="bc-container bc-hero__inner">
+      {% if section.settings.hero_icon %}
+        <img class="bc-hero__icon" src="{{ section.settings.hero_icon | image_url: width: 60 }}" alt="" width="30" height="30" loading="lazy">
+      {% endif %}
+      {% if section.settings.hero_script %}
+        <p class="bc-hero__script">{{ section.settings.hero_script }}</p>
+      {% endif %}
+      {% if section.settings.hero_title %}
+        <h1 class="bc-hero__title">{{ section.settings.hero_title }}</h1>
+      {% endif %}
+      {% if section.settings.hero_subtext %}
+        <div class="bc-hero__subtext">{{ section.settings.hero_subtext }}</div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- WHO WE ARE -->
+  <section class="bc-who">
+    <div class="bc-container bc-who__inner">
+      {% if section.settings.who_title %}
+        <h2 class="bc-section-title bc-center">{{ section.settings.who_title }}</h2>
+        <span class="bc-divider bc-center-divider"></span>
+      {% endif %}
+      {% if section.settings.who_text %}
+        <div class="bc-who__text">{{ section.settings.who_text }}</div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- CRAFTS IN MOTION -->
+  <section class="bc-crafts">
+    <div class="bc-container">
+      {% if section.settings.crafts_title %}
+        <h2 class="bc-section-title bc-center">{{ section.settings.crafts_title }}</h2>
+        <span class="bc-divider bc-center-divider"></span>
+      {% endif %}
+      {% if section.settings.crafts_subtext %}
+        <p class="bc-crafts__subtext">{{ section.settings.crafts_subtext }}</p>
+      {% endif %}
+
+      <div class="bc-crafts__grid">
+        {% for block in section.blocks %}
+          {% if block.type == 'craft_video' %}
+            <div class="bc-craft-card" {{ block.shopify_attributes }}>
+              <div class="bc-craft-card__media">
+                {% if block.settings.video %}
+                  <video class="bc-craft-card__video" autoplay muted loop playsinline webkit-playsinline disablepictureinpicture preload="auto" poster="{% if block.settings.poster %}{{ block.settings.poster | image_url: width: 700 }}{% endif %}">
+                    {% for source in block.settings.video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% elsif block.settings.poster %}
+                  <img src="{{ block.settings.poster | image_url: width: 700 }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+                {% else %}
+                  <div class="bc-craft-card__placeholder">
+                    <span class="bc-craft-card__ratio">9 : 16</span>
+                    <button type="button" class="bc-craft-card__play" aria-label="Play video">
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polygon points="9,7 17,12 9,17" fill="currentColor" stroke="none"/>
+                      </svg>
+                    </button>
+                    <span class="bc-craft-card__hint">{{ block.settings.placeholder_text | default: 'drop video here' }}</span>
+                  </div>
+                {% endif %}
+              </div>
+              {% if block.settings.title %}
+                <h3 class="bc-craft-card__title">{{ block.settings.title }}</h3>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE ROW -->
+  <section class="bc-features">
+    <div class="bc-container bc-features__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'feature' %}
+          <div class="bc-feature" {{ block.shopify_attributes }}>
+            {% if block.settings.icon %}
+              <img class="bc-feature__icon" src="{{ block.settings.icon | image_url: width: 60 }}" alt="" width="30" height="30" loading="lazy">
+            {% else %}
+              <span class="bc-feature__icon bc-feature__icon--svg">
+                {% case block.settings.icon_style %}
+                  {% when 'sparkle' %}
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
+                      <path d="M9.5 3.5c.3 2.7 1 4.4 2.3 5.7 1.3 1.3 3 2 5.7 2.3-2.7.3-4.4 1-5.7 2.3-1.3 1.3-2 3-2.3 5.7-.3-2.7-1-4.4-2.3-5.7C5.9 12.5 4.2 11.8 1.5 11.5c2.7-.3 4.4-1 5.7-2.3 1.3-1.3 2-3 2.3-5.7z"/>
+                      <path d="M18 2.2c.15 1.35.5 2.2 1.15 2.85.65.65 1.5 1 2.85 1.15-1.35.15-2.2.5-2.85 1.15C18.5 8 18.15 8.85 18 10.2c-.15-1.35-.5-2.2-1.15-2.85C16.2 6.7 15.35 6.35 14 6.2c1.35-.15 2.2-.5 2.85-1.15C17.5 4.4 17.85 3.55 18 2.2z"/>
+                    </svg>
+                  {% when 'phone' %}
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 13.5L11 15.5L15.5 11" />
+                      <circle cx="12" cy="11" r="5.2" />
+                      <path d="M8.3 19.2L7 23l3-1.4L11.6 24l1.3-3.7M15.7 19.2L17 23l-3-1.4L12.4 24l-1.3-3.7" />
+                      <path d="M6.9 5.6c1-.6 2-1.5 3-2.6.5-.5 1.2-1 2.1-1s1.6.5 2.1 1c1 1.1 2 2 3 2.6.5.3 1 .9 1 1.6 0 .5-.2.9-.5 1.3-.6.7-1 1.5-1 2.5 0 .4.1.7.2 1.1M6.5 12.2c.1-.4.2-.7.2-1.1 0-1-.4-1.8-1-2.5-.3-.4-.5-.8-.5-1.3 0-.7.5-1.3 1-1.6"/>
+                    </svg>
+                {% endcase %}
+              </span>
+            {% endif %}
+            {% if block.settings.title %}
+              <h3 class="bc-feature__title">{{ block.settings.title }}</h3>
+            {% endif %}
+            {% if block.settings.text %}
+              <p class="bc-feature__text">{{ block.settings.text }}</p>
+            {% endif %}
+            {% if block.settings.link_text != blank %}
+              <a href="{{ block.settings.link_url | default: '#' }}" class="bc-feature__link">{{ block.settings.link_text }}</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- QUOTE BANNER -->
+  <section class="bc-quote">
+    <div class="bc-quote__pattern"></div>
+    <div class="bc-container bc-quote__inner">
+      {% if section.settings.quote_icon %}
+        <img class="bc-quote__icon" src="{{ section.settings.quote_icon | image_url: width: 60 }}" alt="" width="30" height="30" loading="lazy">
+      {% endif %}
+      {% if section.settings.quote_text %}
+        <p class="bc-quote__text">&ldquo;{{ section.settings.quote_text }}&rdquo;</p>
+      {% endif %}
+    </div>
+  </section>
+
+
+</div>
+
+<script>
+  (function () {
+    var videos = document.querySelectorAll('.bc-craft-card__video');
+    if (!videos.length) return;
+    videos.forEach(function (video) {
+      video.muted = true;
+      video.setAttribute('muted', '');
+      var tryPlay = function () { video.play().catch(function(){}); };
+      if (video.readyState >= 2) {
+        tryPlay();
+      } else {
+        video.addEventListener('loadeddata', tryPlay, { once: true });
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            tryPlay();
+          } else {
+            video.pause();
+          }
+        });
+      }, { threshold: 0.25 });
+      observer.observe(video);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "About - BharatCrafted",
+  "settings": [
+    { "type": "header", "content": "Hero" },
+    { "type": "image_picker", "id": "hero_icon", "label": "Hero icon" },
+    { "type": "text", "id": "hero_script", "label": "Script line", "default": "BharatCrafted" },
+    { "type": "text", "id": "hero_title", "label": "Hero title", "default": "Every Thread Tells a Story" },
+    { "type": "richtext", "id": "hero_subtext", "label": "Hero subtext", "default": "<p>From the hands of skilled artisans to your wardrobe — celebrating the colour, texture and soul of India's rich textile heritage.</p>" },
+
+    { "type": "header", "content": "Who We Are" },
+    { "type": "text", "id": "who_title", "label": "Title", "default": "Who We Are" },
+    { "type": "richtext", "id": "who_text", "label": "Body text", "default": "<p>BharatCrafted was born from a love for India's living craft traditions — the quiet artistry passed from one generation of weavers, painters and embroiderers to the next.</p>" },
+
+    { "type": "header", "content": "Crafts in Motion" },
+    { "type": "text", "id": "crafts_title", "label": "Title", "default": "Our Crafts in Motion" },
+    { "type": "text", "id": "crafts_subtext", "label": "Subtext", "default": "Watch our artisans bring each weave, brushstroke and stitch to life." },
+
+    { "type": "header", "content": "Quote banner" },
+    { "type": "image_picker", "id": "quote_icon", "label": "Icon" },
+    { "type": "textarea", "id": "quote_text", "label": "Quote", "default": "Empowering artisans, honouring heritage, and bringing India's finest handcrafted textiles to wardrobes around the world." }
+  ],
+  "blocks": [
+    {
+      "type": "craft_video",
+      "name": "Craft video card",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Handloom Sarees" },
+        { "type": "video", "id": "video", "label": "Video (Shopify-hosted, auto-plays muted & looped)" },
+        { "type": "image_picker", "id": "poster", "label": "Poster image (optional)" },
+        { "type": "text", "id": "placeholder_text", "label": "Placeholder text", "default": "drop video here" }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Feature item",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon (optional, overrides default icon below)" },
+        {
+          "type": "select",
+          "id": "icon_style",
+          "label": "Default icon (used if no image picked)",
+          "options": [
+            { "value": "ribbon", "label": "Ribbon / Badge (check)" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "phone", "label": "Phone" }
+          ],
+          "default": "ribbon"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Authentic & Handcrafted" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Handcrafted by skilled artisans using traditional techniques." },
+        { "type": "text", "id": "link_text", "label": "Link text", "default": "Explore Crafts" },
+        { "type": "url", "id": "link_url", "label": "Link URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About - BharatCrafted",
+      "blocks": [
+        { "type": "craft_video", "settings": { "title": "Brush Painted Sarees" } },
+        { "type": "craft_video", "settings": { "title": "Handloom Sarees" } },
+        { "type": "craft_video", "settings": { "title": "Hand Made Embroidery" } },
+        { "type": "feature", "settings": { "title": "Authentic & Handcrafted", "text": "Handcrafted by skilled artisans using traditional techniques.", "link_text": "Explore Crafts", "icon_style": "ribbon" } },
+        { "type": "feature", "settings": { "title": "Curated for Every Occasion", "text": "Elegant sarees and ethnic wear for every moment.", "link_text": "Shop Collections", "icon_style": "sparkle" } },
+        { "type": "feature", "settings": { "title": "Here to Help, Always", "text": "Expert support to help you choose what's perfect for you.", "link_text": "Contact Us", "icon_style": "phone" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

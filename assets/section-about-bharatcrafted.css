@@ -1,0 +1,305 @@
+/* ==========================================================================
+   BharatCrafted - About Page Section
+   Uses theme default fonts via CSS variables (Dawn-compatible):
+   --font-heading-family / --font-body-family
+   Falls back to inherited theme fonts if variables aren't present.
+   ========================================================================== */
+
+.bc-about {
+  --bc-green: #044704;
+  --bc-green-deep: #044704;
+  --bc-gold: #ffd72f;
+  --bc-cream: #f8f1e4;
+  --bc-cream-soft: #fbf6ea;
+  --bc-text-dark: #1f2a24;
+  --bc-red: #d65d2e;
+  color: var(--bc-text-dark);
+  overflow: hidden;
+}
+
+.bc-about h1,
+.bc-about h2,
+.bc-about h3 {
+  margin: 0;
+}
+
+.bc-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.bc-section-title {
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 600;
+}
+
+.bc-center { text-align: center; }
+
+.bc-divider {
+  display: block;
+  width: 56px;
+  height: 2px;
+  background: var(--bc-gold);
+  margin: 18px 0 28px;
+}
+
+.bc-center-divider { margin-left: auto; margin-right: auto; }
+
+/* ---------- HERO ---------- */
+.bc-hero {
+  position: relative;
+  background: var(--bc-green);
+  padding: 90px 0;
+  text-align: center;
+  color: #fff;
+}
+
+.bc-hero__pattern {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 14px);
+  pointer-events: none;
+}
+
+.bc-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.bc-hero__icon {
+  margin-bottom: 14px;
+}
+
+.bc-hero__script {
+  font-style: italic;
+  color: var(--bc-gold);
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0 0 6px;
+}
+
+.bc-hero__title {
+  color: var(--bc-gold);
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.15;
+  margin-bottom: 22px;
+}
+
+.bc-hero__subtext {
+  font-size: 16px;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
+/* ---------- WHO WE ARE ---------- */
+.bc-who {
+  background: var(--bc-cream-soft);
+  padding: 80px 0;
+  text-align: center;
+}
+
+.bc-who__inner { max-width: 760px; }
+
+.bc-who__text {
+  font-size: 16px;
+  line-height: 1.8;
+  opacity: 0.9;
+}
+
+.bc-who__text p { margin: 0 0 18px; }
+
+/* ---------- CRAFTS IN MOTION ---------- */
+.bc-crafts {
+  background: #fff;
+  padding: 90px 0;
+}
+
+.bc-crafts__subtext {
+  text-align: center;
+  margin: 0 0 50px;
+  opacity: 0.75;
+  font-size: 15px;
+}
+
+.bc-crafts__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.bc-craft-card { text-align: center; }
+
+.bc-craft-card__media {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: 4px;
+  overflow: hidden;
+  background: repeating-linear-gradient(45deg, var(--bc-cream) 0, var(--bc-cream) 10px, #f1e6cd 10px, #f1e6cd 20px);
+}
+
+.bc-craft-card__video,
+.bc-craft-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bc-craft-card__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.bc-craft-card__ratio {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--bc-gold);
+}
+
+.bc-craft-card__play {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--bc-gold);
+  background: transparent;
+  color: var(--bc-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bc-craft-card__hint {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #8c7a4f;
+}
+
+.bc-craft-card__title {
+  margin-top: 18px !important;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* ---------- FEATURES ---------- */
+.bc-features {
+  background: var(--bc-cream-soft);
+  padding: 70px 0;
+}
+
+.bc-features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  text-align: center;
+}
+
+.bc-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.bc-feature__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 16px;
+}
+
+.bc-feature__icon--svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bc-gold);
+}
+
+.bc-feature__title {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+
+.bc-feature__text {
+  font-size: 14px;
+  opacity: 0.75;
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+
+.bc-feature__link {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bc-red);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------- QUOTE ---------- */
+.bc-quote {
+  position: relative;
+  background: var(--bc-green-deep);
+  padding: 100px 0;
+  text-align: center;
+  color: #fff;
+}
+
+.bc-quote__pattern {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 14px);
+  pointer-events: none;
+}
+
+.bc-quote__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.bc-quote__icon { margin-bottom: 18px; }
+
+.bc-quote__text {
+  color: var(--bc-gold);
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ========================================================================== 
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 989px) {
+  .bc-crafts__grid,
+  .bc-features__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 749px) {
+  .bc-hero { padding: 64px 0; }
+  .bc-who,
+  .bc-crafts,
+  .bc-features,
+  .bc-quote { padding: 56px 0; }
+
+  .bc-crafts__grid,
+  .bc-features__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .bc-craft-card__media { max-width: 280px; margin: 0 auto; }
+}
