@@ -10,7 +10,11 @@
         <img class="bc-hero__icon" src="{{ section.settings.hero_icon | image_url: width: 60 }}" alt="" width="30" height="30" loading="lazy">
       {% endif %}
       {% if section.settings.hero_script %}
-        <p class="bc-hero__script">{{ section.settings.hero_script }}</p>
+        <div class="bc-hero__script-wrap">
+          <span class="bc-hero__script-line"></span>
+          <p class="bc-hero__script">{{ section.settings.hero_script }}</p>
+          <span class="bc-hero__script-line"></span>
+        </div>
       {% endif %}
       {% if section.settings.hero_title %}
         <h1 class="bc-hero__title">{{ section.settings.hero_title }}</h1>
@@ -29,6 +33,7 @@
         <span class="bc-divider bc-center-divider"></span>
       {% endif %}
       {% if section.settings.who_text %}
+        <span class="bc-who__quote-mark">&ldquo;</span>
         <div class="bc-who__text">{{ section.settings.who_text }}</div>
       {% endif %}
     </div>
@@ -67,6 +72,11 @@
                       </svg>
                     </button>
                     <span class="bc-craft-card__hint">{{ block.settings.placeholder_text | default: 'drop video here' }}</span>
+                  </div>
+                {% endif %}
+                {% if block.settings.title %}
+                  <div class="bc-craft-card__overlay">
+                    <span class="bc-craft-card__overlay-title">{{ block.settings.title }}</span>
                   </div>
                 {% endif %}
               </div>
@@ -133,6 +143,7 @@
         <img class="bc-quote__icon" src="{{ section.settings.quote_icon | image_url: width: 60 }}" alt="" width="30" height="30" loading="lazy">
       {% endif %}
       {% if section.settings.quote_text %}
+        <span class="bc-quote__open-mark">&ldquo;</span>
         <p class="bc-quote__text">&ldquo;{{ section.settings.quote_text }}&rdquo;</p>
       {% endif %}
     </div>
