@@ -39,7 +39,7 @@
         "collection_block_HXedrX": {
           "type": "collection_block",
           "settings": {
-            "collection": "kurtis-sets",
+            "collection": "kurti-sets",
             "title": "Kurtis Sets",
             "item_image": "shopify://shop_images/Kurtis.png"
           }
@@ -161,7 +161,7 @@
         "collection_block_YXwFjp": {
           "type": "collection_block",
           "settings": {
-            "collection": "kurtis-sets",
+            "collection": "kurti-sets",
             "title": "Kurtis Sets",
             "item_image": "shopify://shop_images/Kurtis.png"
           }
@@ -1109,7 +1109,7 @@
           "type": "tab",
           "settings": {
             "title": "Kurtis Sets",
-            "collection": "kurtis-sets"
+            "collection": "kurti-sets"
           }
         },
         "tab_CiWnF8": {
