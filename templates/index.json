@@ -55,7 +55,7 @@
         "collection_block_XUTeje": {
           "type": "collection_block",
           "settings": {
-            "collection": "unstiched-materials",
+            "collection": "unstitched-materials",
             "title": "Unstiched Materials",
             "item_image": "shopify://shop_images/Unstiched_Materials.png"
           }
@@ -177,7 +177,7 @@
         "collection_block_i7CRfm": {
           "type": "collection_block",
           "settings": {
-            "collection": "unstiched-materials",
+            "collection": "unstitched-materials",
             "title": "Unstiched Materials",
             "item_image": "shopify://shop_images/Unstiched_Materials.png"
           }
